@@ -8,3 +8,9 @@ Ruling: deliver local self-contained builds without Apple notarization or Window
 
 Task 1: complete — core regression 32/32 passed.
 Task 2: complete — import regression 35/35 passed (WAL source, unique match, ambiguity, corruption).
+Task 3: complete — native Skia enumerates exact system styles; 4,278 styles, full incremental reuse. One unreadable GB18030 Bitmap recorded without deleting existing fonts.
+Ruling: use native Skia typefaces for both discovery and preview, instead of Avalonia font fallback matching — synthetic/cached variants and unsupported weight matching changed identity; cost: custom preview drawing code to maintain.
+Task 4: complete — three-column UI and dialogs, real interaction checks passed.
+Final review: fixed tab detach disposal — rendered-pixel assertion RED (blank after tab switch) -> GREEN; core suite 41/41.
+Final review: fixed sample draft loss — refresh draft assertion RED -> GREEN; retained editor/text/name across refresh; core suite 41/41.
+Ruling: let shared native SKTypeface wrappers follow managed reference lifetime rather than dispose on visual detach — tab changes are temporary and wrappers may be shared; native draw operations still dispose their owned SKPaint. Cost: reclamation follows GC.

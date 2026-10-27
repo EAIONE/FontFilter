@@ -30,7 +30,8 @@ public sealed class FontStore:IDisposable
  {
   lock(gate){db.Query("BEGIN IMMEDIATE");try{foreach(var (current,old) in pairs){
    var manual=string.Join(" ",TagRules.Terms(current.ManualTags+" "+old.ManualTags));
-   db.Query("UPDATE fonts SET manual=?,summary=?,url=? WHERE id=?",manual,string.IsNullOrWhiteSpace(current.Summary)?old.Summary:current.Summary,string.IsNullOrWhiteSpace(current.Summary)?old.Url:current.Url,current.Id);
+   var mergedSummary=string.IsNullOrWhiteSpace(current.Summary)?old.Summary:current.Summary;
+   db.Query("UPDATE fonts SET manual=?,summary=?,url=?,auto=? WHERE id=?",manual,mergedSummary,string.IsNullOrWhiteSpace(current.Summary)?old.Url:current.Url,TagsFor(current with{Summary=mergedSummary}),current.Id);
    if(old.IsFavorite)db.Query("INSERT OR IGNORE INTO favorites(family) VALUES(?)",current.Family);
   }db.Query("COMMIT");}catch{db.Query("ROLLBACK");throw;}}
  }

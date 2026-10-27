@@ -5,10 +5,11 @@ public static class ImportTests
  {
   test("legacy import reads WAL and associates unique family/style",()=>{
    var data=Path.Combine(root,"old");Directory.CreateDirectory(data);
-   using var old=new FontStore(Path.Combine(data,"fonts.db"));old.Upsert(new("old","跨平台字体","Regular","file:///C:/Fonts/a.ttf",""));old.SetManual(new[]{"old"},"古籍");old.SetFavorite(new[]{"跨平台字体"},true);old.SaveMetadata("old","手工整理介绍","");
+   using var old=new FontStore(Path.Combine(data,"fonts.db"));old.Upsert(new("old","跨平台字体","Regular","file:///C:/Fonts/a.ttf",""));old.SetManual(new[]{"old"},"古籍");old.SetFavorite(new[]{"跨平台字体"},true);old.SaveMetadata("old","手工整理介绍，中宫宽阔","");
    using var target=new FontStore(Path.Combine(root,"target.db"));target.Upsert(new("new","跨平台字体","Regular","file:///Library/Fonts/a.ttf",""));target.SetManual(new[]{"new"},"清雅");
    var report=LegacyImport.Import(data,target,Path.Combine(root,"imports"));var f=target.All().Single();
-   check(report.Linked==1&&f.ManualTags.Contains("古籍")&&f.ManualTags.Contains("清雅")&&f.IsFavorite&&f.Summary=="手工整理介绍","data lost or wrong match");
+   check(report.Linked==1&&f.ManualTags.Contains("古籍")&&f.ManualTags.Contains("清雅")&&f.IsFavorite&&f.Summary=="手工整理介绍，中宫宽阔","data lost or wrong match");
+   check(f.AutoTags.Contains("中宫宽松"),"imported summary rules not refreshed");
    check(File.Exists(report.BackupPath),"missing destination backup");
   });
   test("ambiguous legacy records remain unresolved and survive another import",()=>{

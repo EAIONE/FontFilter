@@ -3,6 +3,7 @@ public static class WorkspaceTests
 {
  public static void Run(Action<string,Action> test,Action<bool,string> check,string root)
  {
+  test("a data directory admits only one application instance",()=>{var directory=Path.Combine(root,"instance");using(var first=AppInstance.Acquire(directory)){try{using var second=AppInstance.Acquire(directory);throw new Exception("duplicate admitted");}catch(IOException){}}using var reopened=AppInstance.Acquire(directory);});
   test("scan cancellation and errors preserve unseen records",()=>{
    using var s=new FontStore(Path.Combine(root,"scan.db"));s.Upsert(new("old","已知","Regular","x",""));
    ScanCommit.Finish(s,new HashSet<string>(),false,0);check(s.All().Count==1,"cancel removed fonts");
