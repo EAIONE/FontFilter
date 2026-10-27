@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
@@ -40,6 +41,19 @@ public sealed partial class MainWindow
   Settings.Size=120;Settings.SampleMode=FontSamples.FreeKey;Settings.Sample=new string('字',4000);RenderPreviews();await Task.Delay(100);UpdateLayout();
   using(var bitmap=new Avalonia.Media.Imaging.RenderTargetBitmap(new Avalonia.PixelSize(1160,740),new Avalonia.Vector(96,96)))bitmap.Render(this);
   Settings.Size=previousSize;Settings.SampleMode=previousMode;Settings.Sample=previousText;RenderPreviews();
+ }
+ public async Task VerifyLiveTheme()
+ {
+  void Check(bool value,string why){if(!value)throw new Exception(why);}
+  var original=ThemePalette.From(Settings);var task=Dialogs.Theme(this,Settings,SaveSettings);await Task.Delay(100);var dialog=OwnedWindows.Last();var roles=dialog.GetVisualDescendants().OfType<ComboBox>().Single(c=>c.Name=="ThemeRole");var hex=dialog.GetVisualDescendants().OfType<TextBox>().Single(c=>c.Name=="ThemeHex");
+  var sliders=dialog.GetVisualDescendants().OfType<Slider>().ToArray();File.WriteAllLines(Path.Combine(FontFilter.App.DataDirectory,"slider-template.txt"),sliders[0].GetVisualDescendants().Select(c=>$"{c.GetType().Name} {c.Name} {c.Bounds} {(c is Border border?border.Background?.ToString():"")}"));
+  roles.SelectedIndex=2;hex.Text="#FA3311";Check(((Avalonia.Media.SolidColorBrush)Avalonia.Application.Current!.Resources["AccentBrush"]!).Color==Avalonia.Media.Color.Parse("#FA3311"),"editing color must preview main UI immediately");Check(ThemePalette.From(Settings)==original,"preview wrote persisted settings");
+  Check(dialog.GetVisualDescendants().OfType<Border>().Count(b=>b.Background is Avalonia.Media.LinearGradientBrush)>=3,"HSB controls need three gradient color bars");Check(sliders.All(s=>s.GetVisualDescendants().OfType<Border>().Where(b=>b.Name=="TrackBackground").All(b=>b.Opacity<.01)),"old monochrome slider track still overlays color bars");
+  var hueThumb=sliders[0].GetVisualDescendants().OfType<Avalonia.Controls.Primitives.Thumb>().Single();var pointer=new Avalonia.Input.Pointer(9641,Avalonia.Input.PointerType.Mouse,true);var start=hueThumb.TranslatePoint(new Avalonia.Point(hueThumb.Bounds.Width/2,hueThumb.Bounds.Height/2),dialog)!.Value;var end=start+new Avalonia.Vector(50,0);var pressed=new Avalonia.Input.PointerPointProperties(Avalonia.Input.RawInputModifiers.LeftMouseButton,Avalonia.Input.PointerUpdateKind.LeftButtonPressed);var beforeDrag=sliders[0].Value;
+  hueThumb.RaiseEvent(new Avalonia.Input.PointerPressedEventArgs(hueThumb,pointer,dialog,start,1,pressed,Avalonia.Input.KeyModifiers.None,1));hueThumb.RaiseEvent(new Avalonia.Input.PointerEventArgs(Avalonia.Input.InputElement.PointerMovedEvent,hueThumb,pointer,dialog,end,2,pressed,Avalonia.Input.KeyModifiers.None));hueThumb.RaiseEvent(new Avalonia.Input.PointerReleasedEventArgs(hueThumb,pointer,dialog,end,3,new Avalonia.Input.PointerPointProperties(),Avalonia.Input.KeyModifiers.None,Avalonia.Input.MouseButton.Left));Check(Math.Abs(sliders[0].Value-beforeDrag)>1,"native pointer drag no longer moves color slider");
+  sliders[0].Value=120;Check(hex.Text!="#FA3311","hue drag did not update hex");roles.SelectedIndex=3;hex.Text="#667788";Check(((Avalonia.Media.SolidColorBrush)Avalonia.Application.Current!.Resources["HeaderBrush"]!).Color==Avalonia.Media.Color.Parse("#667788"),"header must preview live");
+  dialog.UpdateLayout();using(var bitmap=new Avalonia.Media.Imaging.RenderTargetBitmap(new Avalonia.PixelSize((int)dialog.Bounds.Width,(int)dialog.Bounds.Height),new Avalonia.Vector(96,96))){bitmap.Render(dialog);bitmap.Save(Path.Combine(FontFilter.App.DataDirectory,"live-theme.png"));}
+  dialog.Close();await task;Check(ThemePalette.From(Settings)==original,"cancel changed saved settings");Check(((Avalonia.Media.SolidColorBrush)Avalonia.Application.Current!.Resources["HeaderBrush"]!).Color==Avalonia.Media.Color.Parse(original.Header),"cancel did not restore main UI");File.WriteAllText(Path.Combine(FontFilter.App.DataDirectory,"live-theme-pass.txt"),"Live hex/HSB/header, gradient bars, cancel rollback PASS");
  }
  public void SelectForProof(){sampleExpander.IsExpanded=false;query.Text="";var preferred=matches.FirstOrDefault(f=>f.Family.Contains("宋"))??matches.First();var row=fontList.Items.OfType<FontRow>().First(r=>r.Fonts.Any(f=>f.Id==preferred.Id));fontList.SelectedItem=row;}
  public void ShowComparisonForProof()=>tabs.SelectedIndex=1;

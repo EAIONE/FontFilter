@@ -15,6 +15,8 @@
   <Style Selector="TextBox"><Setter Property="CornerRadius" Value="6"/><Setter Property="Padding" Value="10,7"/></Style>
   <Style Selector="ListBoxItem"><Setter Property="Padding" Value="10,12"/><Setter Property="CornerRadius" Value="6"/></Style>
   <Style Selector="ListBoxItem:selected"><Setter Property="Background" Value="{DynamicResource SoftBrush}"/></Style>
+  <Style Selector="Slider.colorChannel:not(:pointerover) /template/ RepeatButton /template/ Border#TrackBackground, Slider.colorChannel:pointerover /template/ RepeatButton /template/ Border#TrackBackground"><Setter Property="Opacity" Value="0"/></Style>
+  <Style Selector="Slider.colorChannel /template/ Thumb:not(:pointerover) /template/ Border, Slider.colorChannel /template/ Thumb:pointerover /template/ Border"><Setter Property="Background" Value="White"/><Setter Property="BorderBrush" Value="#435D52"/><Setter Property="BorderThickness" Value="2"/><Setter Property="CornerRadius" Value="12"/><Setter Property="BoxShadow" Value="0 1 4 0 #33000000"/></Style>
   <Style Selector="ScrollBar"><Setter Property="AllowAutoHide" Value="False"/></Style>
   <Style Selector="ScrollBar:vertical"><Setter Property="Width" Value="24"/><Setter Property="MinWidth" Value="24"/></Style>
   <Style Selector="ScrollBar:horizontal"><Setter Property="Height" Value="24"/><Setter Property="MinHeight" Value="24"/></Style>

@@ -8,7 +8,7 @@ public static class Verification
  {
   var first=await window.ScanFonts();if(!first.Complete||first.Faces==0)throw new Exception("real font scan failed");
   var second=await window.ScanFonts();if(second.Faces!=first.Faces||second.Reused!=second.Faces)throw new Exception($"incremental scan mismatch: first={first}; second={second}");
-  await window.VerifyInteractions();window.SelectForProof();window.State.ClearCompare();
+  await window.VerifyInteractions();await window.VerifyLiveTheme();window.SelectForProof();window.State.ClearCompare();
   var fonts=window.Store.All();var chinese=FontOrdering.Order(fonts).First();var glyph=FontScanner.Resolve(chinese);var file=await FontFileLocator.FindAsync(chinese);if(file==null||!File.Exists(file))throw new Exception("cannot locate real system font file");var missing=GlyphCoverage.Missing("中文A𠮷",v=>glyph.GetGlyph(v)!=0);
   window.State.AddCompare(chinese);foreach(var f in FontOrdering.Order(fonts).Where(f=>f.Family!=chinese.Family).Take(2))window.State.AddCompare(f);window.RenderPreviews();
   await Task.Delay(700);window.UpdateLayout();
