@@ -1,0 +1,35 @@
+PASS family retains distinct weights
+PASS manual survives rescan
+PASS metadata does not overwrite manual tags
+PASS multi-term intersection and source matching
+PASS query treats SQL wildcard literally
+PASS persistence
+BENCH 3000 records 6.2 ms
+PASS 3000 record query benchmark
+PASS round shape and category synonyms
+PASS sans serif is not song category
+PASS does not hallucinate aesthetic
+PASS official domain validation
+PASS HTML extraction ignores scripts
+PASS removed fonts hide and reinstall retains labels
+PASS missing glyph check
+FIRST_SCAN 3166 ms
+RESCAN 3157 ms
+ACTUAL fonts=7648, families=1517, errors=0, reused=7648
+PASS scan actual installed fonts and incremental rescan
+PASS scan cancels while paused
+PASS source replacement invalidates reuse
+PASS metadata UI snapshot saves across worker boundary
+PASS response body stalls time out without metadata changes
+PASS window can close without active scan
+PASS glyph preview lays out and renders
+SORT status=���ڶ�ȡ����������
+SORT zh=1217 en=1325 first=����Ͱ��ջ���,��һ��,����,��������������
+PASS left list puts Chinese family before Arial
+PASS add comparison actually opens populated comparison tab
+PASS expanded tags cover publishing traits
+PASS tag picker merge never truncates manual tags
+PASS AND search does not ignore thirty-first term
+PASS CJK detection requires actual nonzero glyphs
+PASS batch comparison renders two columns, supports removal and six-font cap
+RESULT 28/28 passed

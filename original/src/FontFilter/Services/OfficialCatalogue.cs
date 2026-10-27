@@ -1,0 +1,17 @@
+using System.IO;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+namespace FontFilter;
+public sealed class OfficialFontInfo {public string Id{get;set;}="";public string Vendor{get;set;}="";public string Family{get;set;}="";public string[] Aliases{get;set;}=Array.Empty<string>();public string SourceUrl{get;set;}="";public string Summary{get;set;}="";public string[] Tags{get;set;}=Array.Empty<string>();public string Status{get;set;}="";public string FetchedAt{get;set;}="";}
+public sealed record OfficialMatch(FontRecord Local,OfficialFontInfo Source,string Basis);
+public sealed record OfficialImportResult(int Added,int Existing,int WithoutDescription);
+public sealed class OfficialCatalogue
+{
+ public int SchemaVersion{get;set;}public string GeneratedAt{get;set;}="";public List<OfficialFontInfo> Records{get;set;}=new();
+ public static OfficialCatalogue Load(string path){var info=new FileInfo(path);if(!info.Exists)throw new FileNotFoundException("未找到官网资料缓存。",path);if(info.Length>40_000_000)throw new InvalidDataException("资料缓存超过40MB。");var result=JsonSerializer.Deserialize<OfficialCatalogue>(File.ReadAllText(path),new JsonSerializerOptions{PropertyNameCaseInsensitive=true,MaxDepth=16})??throw new InvalidDataException("资料缓存为空。");if(result.SchemaVersion!=1)throw new InvalidDataException("不支持的资料缓存版本。");result.Records=(result.Records??new()).Where(r=>r!=null&&!string.IsNullOrWhiteSpace(r.Id)&&!string.IsNullOrWhiteSpace(r.Family)&&Uri.TryCreate(r.SourceUrl,UriKind.Absolute,out var u)&&OfficialMetadataService.IsAllowed(u)).ToList();foreach(var r in result.Records){r.Aliases??=Array.Empty<string>();r.Tags??=Array.Empty<string>();r.Summary??="";}return result;}
+ public static string Normalize(string text)=>Regex.Replace((text??"").Normalize(NormalizationForm.FormKC).Replace("简体","简").Replace("繁体","繁"),@"[\s_\-.,·]","").ToLowerInvariant();
+ static string FileAlias(string source){try{return Path.GetFileNameWithoutExtension(new Uri(source).LocalPath);}catch{return "";}}
+ public static List<OfficialMatch> Match(IEnumerable<FontRecord> fonts,IEnumerable<OfficialFontInfo> catalogue){var index=new Dictionary<string,Dictionary<string,OfficialFontInfo>>(StringComparer.Ordinal);foreach(var item in catalogue){foreach(var alias in (item.Aliases??Array.Empty<string>()).Append(item.Family).Append(item.Family+"家族")){var key=Normalize(alias);if(key.Length==0)continue;if(!index.TryGetValue(key,out var bucket))index[key]=bucket=new();bucket[item.Id]=item;}}var result=new List<OfficialMatch>();foreach(var f in fonts){var keys=new[]{(Normalize(f.Family),"名称对应（家族资料）"),(Normalize(FileAlias(f.Source)),"文件名对应（家族资料）")};var candidates=new Dictionary<string,(OfficialFontInfo Item,string Basis)>();foreach(var key in keys)if(key.Item1.Length>0&&index.TryGetValue(key.Item1,out var bucket))foreach(var item in bucket.Values)candidates[item.Id]=(item,key.Item2);if(candidates.Count==1){var c=candidates.Values.Single();result.Add(new(f,c.Item,c.Basis));}}return result;}
+ public static string Format(OfficialFontInfo item){var parts=new List<string>();if(!string.IsNullOrWhiteSpace(item.Summary))parts.Add("官网介绍摘录："+item.Summary.Trim()[..Math.Min(item.Summary.Trim().Length,180)]);var tags=(item.Tags??Array.Empty<string>()).Where(t=>!string.IsNullOrWhiteSpace(t)).Select(t=>t.Trim()).Where(t=>t.Length<=32).Distinct().Take(40).ToArray();if(tags.Length>0)parts.Add("官网标签："+string.Join("、",tags));return string.Join("\n",parts);}
+}
