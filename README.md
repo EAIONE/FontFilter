@@ -1,5 +1,15 @@
 # 字里行间 · Windows / macOS 跨平台版
 
+## 下载
+
+前往 [Releases 页面](https://github.com/EAIONE/FontFilter/releases) 下载对应平台的压缩包：
+
+| 文件 | 适用平台 |
+| --- | --- |
+| `FontFilter-macOS-Intel.zip` | macOS 12+（Intel 芯片） |
+| `FontFilter-Windows-x64.zip` | Windows 10/11 x64 |
+| `LegacyData-Import.zip` | 需要从 Windows 旧版迁移数据时使用 |
+
 ## 打开软件
 
 - 本次 Mac 包适合 Intel iMac，macOS 12 或以上。打开“字里行间.app”，也可拖到“应用程序”。
