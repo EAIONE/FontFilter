@@ -2,8 +2,7 @@ using System.Runtime.InteropServices;
 namespace FontFilter;
 internal sealed class NativeSqlite:IDisposable
 {
- const string Dll="fontfilter-sqlite";
- static NativeSqlite() => NativeLibrary.SetDllImportResolver(typeof(NativeSqlite).Assembly, (name, assembly, path) => name == Dll ? NativeLibrary.Load(OperatingSystem.IsWindows() ? "winsqlite3.dll" : OperatingSystem.IsMacOS() ? "/usr/lib/libsqlite3.dylib" : "libsqlite3.so.0") : IntPtr.Zero); IntPtr db;
+ const string Dll="e_sqlite3"; IntPtr db;
  [DllImport(Dll,CallingConvention=CallingConvention.Cdecl)] static extern int sqlite3_open_v2([MarshalAs(UnmanagedType.LPUTF8Str)] string name,out IntPtr db,int flags,IntPtr vfs);
  [DllImport(Dll,CallingConvention=CallingConvention.Cdecl)] static extern int sqlite3_close_v2(IntPtr db);
  [DllImport(Dll,CallingConvention=CallingConvention.Cdecl)] static extern int sqlite3_busy_timeout(IntPtr db,int ms);
@@ -31,7 +30,7 @@ internal sealed class NativeSqlite:IDisposable
   using var input=new NativeSqlite(source,true);using var output=new NativeSqlite(destination);
   var backup=sqlite3_backup_init(output.db,"main",input.db,"main");if(backup==IntPtr.Zero)throw new InvalidOperationException(output.Error());
   int rc;try{rc=sqlite3_backup_step(backup,-1);}finally{sqlite3_backup_finish(backup);}
-  if(rc!=101)throw new InvalidOperationException("数据库正忙或无法备份，请关闭原程序后重试。");
+  if(rc!=101)throw new InvalidOperationException($"数据库无法备份（SQLite {rc}）：{input.Error()} / {output.Error()}。请关闭原程序后重试。");
  }
  public void Dispose(){if(db!=IntPtr.Zero){sqlite3_close_v2(db);db=IntPtr.Zero;}}
 }

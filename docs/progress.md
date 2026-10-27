@@ -14,3 +14,10 @@ Task 4: complete — three-column UI and dialogs, real interaction checks passed
 Final review: fixed tab detach disposal — rendered-pixel assertion RED (blank after tab switch) -> GREEN; core suite 41/41.
 Final review: fixed sample draft loss — refresh draft assertion RED -> GREEN; retained editor/text/name across refresh; core suite 41/41.
 Ruling: let shared native SKTypeface wrappers follow managed reference lifetime rather than dispose on visual detach — tab changes are temporary and wrappers may be shared; native draw operations still dispose their owned SKPaint. Cost: reclamation follows GC.
+
+Final: actual archived user database exposed macOS system SQLite read-only WAL behavior without sidecar files. Added a closed-WAL-with-sidecars-removed regression and watched it fail; bundle portable SQLite instead of relying on OS builds. Native backup API still performs coherent WAL-aware snapshots; source is opened read-only.
+
+Task 5: complete — self-contained osx-x64 and win-x64 packages built; final Mac ZIP extracted, strict signature checked, full app verification exited 0; final core suite 43/43. Windows PE and native SQLite DLL verified x86-64; Windows runtime unavailable.
+Final: closed offline WAL regression RED -> GREEN with bundled SQLite 3.53.3; actual legacy import linked 1441 and retained 2827 unresolved records.
+Ruling: bundle the same SQLite implementation on both platforms to avoid OS library read-only WAL differences; cost: an additional native runtime dependency, included in both packages.
+Ruling: sign and archive in a local temporary staging directory because synced Documents adds FinderInfo; cost: temporary staging remains for inspection until OS cleanup.

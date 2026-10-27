@@ -3,6 +3,8 @@ public static class ImportTests
 {
  public static void Run(Action<string,Action> test,Action<bool,string> check,string root)
  {
+  test("closed WAL database imports without sidecar files",()=>{var data=Path.Combine(root,"closed-wal");Directory.CreateDirectory(data);using(var old=new FontStore(Path.Combine(data,"fonts.db"))){old.Upsert(new("old","离线字体","Regular","old",""));old.SetManual(new[]{"old"},"古籍");}File.Delete(Path.Combine(data,"fonts.db-wal"));File.Delete(Path.Combine(data,"fonts.db-shm"));using var target=new FontStore(Path.Combine(root,"closed-target.db"));target.Upsert(new("new","离线字体","Regular","new",""));var result=LegacyImport.Import(data,target,Path.Combine(root,"closed-history"));check(result.Linked==1&&target.All().Single().ManualTags=="古籍","closed WAL import failed");});
+  test("database snapshots support relative paths below Unicode working directory",()=>{using var source=new FontStore(Path.Combine(root,"relative-source.db"));source.Upsert(new("1","快照字体","Regular","x",""));var destination=Path.Combine(root,"相对路径快照.db");source.Backup(Path.GetRelativePath(Environment.CurrentDirectory,destination));using var copy=new FontStore(destination);check(copy.All().Single().Family=="快照字体","relative snapshot lost data");});
   test("legacy import reads WAL and associates unique family/style",()=>{
    var data=Path.Combine(root,"old");Directory.CreateDirectory(data);
    using var old=new FontStore(Path.Combine(data,"fonts.db"));old.Upsert(new("old","跨平台字体","Regular","file:///C:/Fonts/a.ttf",""));old.SetManual(new[]{"old"},"古籍");old.SetFavorite(new[]{"跨平台字体"},true);old.SaveMetadata("old","手工整理介绍，中宫宽阔","");
