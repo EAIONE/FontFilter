@@ -5,7 +5,7 @@ using Avalonia.Media;
 namespace FontFilter.Desktop;
 public sealed class DesktopApp:Application
 {
- public override void Initialize(){AvaloniaXamlLoader.Load(this);ThemeService.Apply("#16594D");}
+ public override void Initialize(){AvaloniaXamlLoader.Load(this);ThemeService.Apply(new UserSettings());}
  public override void OnFrameworkInitializationCompleted()
  {
   if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop){
@@ -18,11 +18,4 @@ public sealed class DesktopApp:Application
   }
   base.OnFrameworkInitializationCompleted();
  }
-}
-public static class ThemeService
-{
- public const string DefaultColor="#16594D";
- public static bool IsValid(string? hex)=>hex!=null&&System.Text.RegularExpressions.Regex.IsMatch(hex,"^#[0-9a-fA-F]{6}$");
- public static Color TextColor(Color c){double L(byte b){var x=b/255d;return x<=.04045?x/12.92:Math.Pow((x+.055)/1.055,2.4);}return .2126*L(c.R)+.7152*L(c.G)+.0722*L(c.B)>.179?Colors.Black:Colors.White;}
- public static void Apply(string? hex){var color=Color.Parse(IsValid(hex)?hex!:DefaultColor);var r=Application.Current!.Resources;r["AccentBrush"]=new SolidColorBrush(color);r["SystemAccentColor"]=color;r["SystemAccentColorDark1"]=color;r["SystemAccentColorLight1"]=color;r["HeaderBrush"]=new SolidColorBrush(Color.FromRgb((byte)(color.R*.45),(byte)(color.G*.45),(byte)(color.B*.45)));r["HeaderButtonBrush"]=new SolidColorBrush(Color.FromRgb((byte)(color.R*.75),(byte)(color.G*.75),(byte)(color.B*.75)));r["AccentTextBrush"]=new SolidColorBrush(TextColor(color));Color Mix(double a)=>Color.FromRgb((byte)(color.R*(1-a)+255*a),(byte)(color.G*(1-a)+255*a),(byte)(color.B*(1-a)+255*a));r["SoftBrush"]=new SolidColorBrush(Mix(.91));r["InkBrush"]=new SolidColorBrush(Color.FromRgb((byte)(color.R*.65),(byte)(color.G*.65),(byte)(color.B*.65)));}
 }

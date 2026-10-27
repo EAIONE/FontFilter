@@ -3,3 +3,5 @@
 **/obj/
 release/
 .DS_Store
+
+backups/

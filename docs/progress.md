@@ -21,3 +21,10 @@ Task 5: complete — self-contained osx-x64 and win-x64 packages built; final Ma
 Final: closed offline WAL regression RED -> GREEN with bundled SQLite 3.53.3; actual legacy import linked 1441 and retained 2827 unresolved records.
 Ruling: bundle the same SQLite implementation on both platforms to avoid OS library read-only WAL differences; cost: an additional native runtime dependency, included in both packages.
 Ruling: sign and archive in a local temporary staging directory because synced Documents adds FinderInfo; cost: temporary staging remains for inspection until OS cleanup.
+
+## 0.2.1 user interface follow-up
+User requested category/temperament/usage ordering, independent color roles, tag spacing/right-aligned action, rounded colored scrollbars, full-width comparison rows, wheel adjustments and reveal-local-font button.
+Core regression: 48/48 passed; native UI verifies role switching/save/cancel, readable light primary, sorted groups, actual thumb width/color/roundness, full-width comparison and routed wheel events.
+Mac CoreText located the exact installed ALIBABA-PUHUITI-REGULAR.OTF by PostScript name. Windows file lookup uses registry/font directories plus font fingerprint/TTC matching; native file candidates are deterministically disposed. Shared system typefaces remain under managed lifetime as previously ruled to avoid disposing wrappers used by previews.
+Independent review found light primary could hide tags: reproduced with #FFFFFF, darkened readable ink, UI check green. New file lookup review fixed owned file-typeface and CoreText library-handle lifetime.
+Both self-contained packages updated. Final Mac ZIP extracted and signature checked; packaged UI/scan verification exited 0. User data was backed up under ignored backups/ after normal app closure, and installed app updated/reopened with 22pt and 1.3 line spacing retained.

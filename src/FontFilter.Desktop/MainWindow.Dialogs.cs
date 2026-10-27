@@ -9,10 +9,11 @@ public sealed partial class MainWindow
 {
  async Task PickTags(bool search)
  {
-  var filter=Ui.Input("","搜索标签名称、维度或说明");var chosen=new HashSet<string>();
-  var panel=new StackPanel{Spacing=12};var count=Ui.Text("未选择标签",12);var apply=new Button{Content=search?"用所选标签筛选":"添加到人工标签"};apply.Classes.Add("primary");
-  var grid=Ui.Grid("*","Auto,Auto,*,Auto");grid.Margin=new Thickness(24);Ui.Put(grid,Ui.Stack(Ui.Heading("按特征挑选字体"),Ui.Text("多个关键词要求同时匹配；勾选标签后应用。",12)));Ui.Put(grid,filter,0,1);Ui.Put(grid,new ScrollViewer{Content=panel,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},0,2);Ui.Put(grid,Ui.Row(count,apply),0,3);var w=Ui.Window("分类标签库",grid,850,720);
-  var definitions=Store.AvailableTagDefinitions();var tagCounts=Store.TagCounts(definitions.Select(t=>t.Name));
+  var filter=Ui.Input("","搜索标签名称、维度或说明");filter.Name="TagSearch";filter.Margin=new Thickness(0,16,0,20);filter.MinHeight=40;var chosen=new HashSet<string>();
+  var panel=new StackPanel{Spacing=12};var count=Ui.Text("未选择标签",12);var apply=new Button{Content=search?"用所选标签筛选":"添加到人工标签"};apply.Name="ApplyTags";apply.Classes.Add("primary");
+  var footer=Ui.Grid("*,Auto");footer.Margin=new Thickness(0,18,0,0);count.VerticalAlignment=VerticalAlignment.Center;Ui.Put(footer,count);Ui.Put(footer,apply,1);
+  var grid=Ui.Grid("*","Auto,Auto,*,Auto");grid.Margin=new Thickness(24);Ui.Put(grid,Ui.Stack(Ui.Heading("按特征挑选字体"),Ui.Text("多个关键词要求同时匹配；勾选标签后应用。",12)));Ui.Put(grid,filter,0,1);Ui.Put(grid,new ScrollViewer{Content=panel,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},0,2);Ui.Put(grid,footer,0,3);var w=Ui.Window("分类标签库",grid,850,720);
+  var definitions=TagCatalog.OrderForPicker(Store.AvailableTagDefinitions()).ToList();var tagCounts=Store.TagCounts(definitions.Select(t=>t.Name));
   void Render(){panel.Children.Clear();foreach(var group in definitions.Where(t=>(t.Name+" "+t.Category+" "+t.Aliases).Contains(filter.Text??"",StringComparison.OrdinalIgnoreCase)).GroupBy(t=>t.Category)){
    var wrap=new WrapPanel();foreach(var tag in group){var box=new CheckBox{Content=$"{tag.Name}  {tagCounts.GetValueOrDefault(tag.Name)}",IsChecked=chosen.Contains(tag.Name),Margin=new Thickness(0,0,15,8),MinWidth=125};box.IsCheckedChanged+=(_,_)=>{if(box.IsChecked==true)chosen.Add(tag.Name);else chosen.Remove(tag.Name);count.Text=$"已选 {chosen.Count} 项";};wrap.Children.Add(box);}panel.Children.Add(Ui.Stack(Ui.Heading(group.Key,15),wrap));}}
   filter.TextChanged+=(_,_)=>Render();Render();apply.Click+=(_,_)=>{Settings.RecordTags(chosen);SaveSettings();if(search)query.Text=TagRules.SelectionText(query.Text??"",chosen,true);else manual.Text=TagRules.SelectionText(manual.Text??"",chosen,false);w.Close();};await w.ShowDialog(this);
@@ -61,7 +62,7 @@ public sealed partial class MainWindow
   var choose=Ui.AsyncButton("选择文件夹",async()=>{var picked=await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions{Title="选择旧版 Data 文件夹",AllowMultiple=false});if(picked.Count>0)path.Text=picked[0].TryGetLocalPath()??"";});
   var root=Ui.Stack(Ui.Heading("导入旧版数据"),note,path,choose,settings,feedback,run);root.Margin=new Thickness(24);var w=Ui.Window("导入旧版 Data",root,740,500);
   run.Click+=async(_,_)=>{run.IsEnabled=false;try{SavePending();var report=LegacyImport.Import(path.Text??"",Store,Path.Combine(FontFilter.App.DataDirectory,"ImportHistory"));
-   if(settings.IsChecked==true&&report.Settings!=null){var settingsFile=Path.Combine(FontFilter.App.DataDirectory,"settings.json");if(File.Exists(settingsFile))File.Copy(settingsFile,report.BackupPath+".settings.json");Settings=report.Settings;SaveSettings();ThemeService.Apply(Settings.ThemeColor);changing=true;sizeInput.Value=(decimal)Settings.Size;lineInput.Value=(decimal)Settings.LineHeight;RefreshSampleModes();changing=false;}
+   if(settings.IsChecked==true&&report.Settings!=null){var settingsFile=Path.Combine(FontFilter.App.DataDirectory,"settings.json");if(File.Exists(settingsFile))File.Copy(settingsFile,report.BackupPath+".settings.json");Settings=report.Settings;SaveSettings();ThemeService.Apply(Settings);changing=true;sizeInput.Value=(decimal)Settings.Size;lineInput.Value=(decimal)Settings.LineHeight;RefreshSampleModes();changing=false;}
    RefreshRows();feedback.Text=$"已关联 {report.Linked} 个样式；待关联 {report.Unresolved} 项。\n备份：{report.BackupPath}\n待关联：{report.UnresolvedPath}\n待关联记录会保留在 ImportHistory 内，可在安装对应字体后重新导入旧 Data。";
   }catch(Exception ex){await Dialogs.Message(w,"导入失败",ex.Message);}finally{run.IsEnabled=true;}};await w.ShowDialog(this);
  }

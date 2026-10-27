@@ -5,7 +5,7 @@ using Avalonia.Media;
 namespace FontFilter.Desktop;
 public static class Ui
 {
- public static TextBlock Text(string text,double size=13,IBrush? color=null)=>new(){Text=text,FontSize=size,Foreground=color??Brushes.DarkSlateGray,TextWrapping=TextWrapping.Wrap};
+ public static TextBlock Text(string text,double size=13,IBrush? color=null){var block=new TextBlock{Text=text,FontSize=size,TextWrapping=TextWrapping.Wrap};if(color!=null)block.Foreground=color;return block;}
  public static TextBlock Heading(string text,double size=19)=>new(){Text=text,FontSize=size,FontWeight=FontWeight.SemiBold,Margin=new Thickness(0,4,0,10)};
  public static Button Button(string text,Action action,string? style=null){var b=new Button{Content=text};if(style!=null)b.Classes.Add(style);b.Click+=(_,_)=>action();return b;}
  public static Button AsyncButton(string text,Func<Task> action,string? style=null){var b=new Button{Content=text};if(style!=null)b.Classes.Add(style);b.Click+=async(_,_)=>{b.IsEnabled=false;try{await action();}catch(Exception ex){if(TopLevel.GetTopLevel(b) is Window owner)await Dialogs.Message(owner,"操作失败",ex.Message);}finally{b.IsEnabled=true;}};return b;}

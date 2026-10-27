@@ -4,14 +4,28 @@
   <Style Selector="Window"><Setter Property="FontSize" Value="13"/><Setter Property="Foreground" Value="#203C36"/><Setter Property="Background" Value="#F3F5F1"/></Style>
   <Style Selector="Button"><Setter Property="CornerRadius" Value="7"/><Setter Property="Padding" Value="12,8"/><Setter Property="MinHeight" Value="34"/><Setter Property="Cursor" Value="Hand"/></Style>
   <Style Selector="Button.primary"><Setter Property="Background" Value="{DynamicResource AccentBrush}"/><Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/></Style>
-  <Style Selector="Button.header"><Setter Property="Background" Value="{DynamicResource HeaderButtonBrush}"/><Setter Property="Foreground" Value="White"/><Setter Property="BorderThickness" Value="0"/></Style>
+  <Style Selector="Button.header"><Setter Property="Background" Value="{DynamicResource HeaderButtonBrush}"/><Setter Property="Foreground" Value="{DynamicResource HeaderButtonTextBrush}"/><Setter Property="BorderThickness" Value="0"/></Style>
   <Style Selector="Border.appHeader"><Setter Property="Background" Value="{DynamicResource HeaderBrush}"/></Style>
   <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter"><Setter Property="Background" Value="{DynamicResource SoftBrush}"/></Style>
-  <Style Selector="Button.tag"><Setter Property="Padding" Value="9,5"/><Setter Property="MinHeight" Value="27"/><Setter Property="FontSize" Value="11"/><Setter Property="Background" Value="{DynamicResource SoftBrush}"/><Setter Property="Foreground" Value="{DynamicResource InkBrush}"/></Style>
+  <Style Selector="Button.tag"><Setter Property="Padding" Value="9,5"/><Setter Property="MinHeight" Value="27"/><Setter Property="FontSize" Value="11"/><Setter Property="Background" Value="{DynamicResource SoftBrush}"/><Setter Property="Foreground" Value="{DynamicResource SoftTextBrush}"/></Style>
+  <Style Selector="TextBlock.brand"><Setter Property="Foreground" Value="{DynamicResource HeaderTextBrush}"/></Style>
+  <Style Selector="TextBlock.muted"><Setter Property="Foreground" Value="#63756D"/></Style>
+  <Style Selector="TextBlock.fontTags"><Setter Property="Foreground" Value="{DynamicResource InkBrush}"/></Style>
+  <Style Selector="ListBoxItem:selected TextBlock"><Setter Property="Foreground" Value="{DynamicResource SoftTextBrush}"/></Style>
   <Style Selector="TextBox"><Setter Property="CornerRadius" Value="6"/><Setter Property="Padding" Value="10,7"/></Style>
   <Style Selector="ListBoxItem"><Setter Property="Padding" Value="10,12"/><Setter Property="CornerRadius" Value="6"/></Style>
   <Style Selector="ListBoxItem:selected"><Setter Property="Background" Value="{DynamicResource SoftBrush}"/></Style>
-  <Style Selector="ScrollBar"><Setter Property="MinWidth" Value="14"/></Style>
-  <Style Selector="ScrollBar /template/ Thumb"><Setter Property="MinHeight" Value="36"/></Style>
+  <Style Selector="ScrollBar"><Setter Property="AllowAutoHide" Value="False"/></Style>
+  <Style Selector="ScrollBar:vertical"><Setter Property="Width" Value="24"/><Setter Property="MinWidth" Value="24"/></Style>
+  <Style Selector="ScrollBar:horizontal"><Setter Property="Height" Value="24"/><Setter Property="MinHeight" Value="24"/></Style>
+  <Style Selector="ScrollBar:vertical /template/ Border#VerticalRoot"><Setter Property="Width" Value="24"/><Setter Property="Background" Value="{DynamicResource ScrollTrackBrush}"/><Setter Property="CornerRadius" Value="12"/><Setter Property="ClipToBounds" Value="True"/></Style>
+  <Style Selector="ScrollBar:horizontal /template/ Border#HorizontalRoot"><Setter Property="Height" Value="24"/><Setter Property="Background" Value="{DynamicResource ScrollTrackBrush}"/><Setter Property="CornerRadius" Value="12"/><Setter Property="ClipToBounds" Value="True"/></Style>
+  <Style Selector="ScrollBar:vertical /template/ Thumb"><Setter Property="MinHeight" Value="44"/><Setter Property="MinWidth" Value="20"/></Style>
+  <Style Selector="ScrollBar:horizontal /template/ Thumb"><Setter Property="MinWidth" Value="44"/><Setter Property="MinHeight" Value="20"/></Style>
+  <Style Selector="ScrollBar /template/ RepeatButton#PART_LineUpButton, ScrollBar /template/ RepeatButton#PART_LineDownButton, ScrollBar /template/ RepeatButton#PART_LineLeftButton, ScrollBar /template/ RepeatButton#PART_LineRightButton"><Setter Property="IsVisible" Value="False"/></Style>
+  <Style Selector="ScrollBar /template/ Thumb /template/ Border"><Setter Property="Background" Value="{DynamicResource ScrollThumbBrush}"/><Setter Property="CornerRadius" Value="7"/><Setter Property="Margin" Value="2"/></Style>
+  <Style Selector="ScrollBar /template/ Thumb:not(:pointerover) /template/ Border, ScrollBar /template/ Thumb:pointerover /template/ Border"><Setter Property="CornerRadius" Value="10"/><Setter Property="ClipToBounds" Value="True"/></Style>
+  <Style Selector="ScrollBar /template/ Thumb:not(:pointerover) /template/ Border"><Setter Property="Background" Value="{DynamicResource ScrollThumbBrush}"/></Style>
+  <Style Selector="ScrollBar /template/ Thumb:pointerover /template/ Border"><Setter Property="Background" Value="{DynamicResource AccentBrush}"/></Style>
  </Application.Styles>
 </Application>

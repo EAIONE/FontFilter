@@ -39,7 +39,7 @@ public sealed partial class MainWindow:Window
  {
   Title="字里行间 · 字体筛选与试排";Width=1440;Height=920;MinWidth=1160;MinHeight=740;WindowStartupLocation=WindowStartupLocation.CenterScreen;
   FontFamily=new FontFamily(OperatingSystem.IsMacOS()?"PingFang SC":"Microsoft YaHei UI");
-  Settings=SettingsStore.Load();ThemeService.Apply(Settings.ThemeColor);
+  Settings=SettingsStore.Load();ThemeService.Apply(Settings);
   Store=new FontStore(Path.Combine(FontFilter.App.DataDirectory,"fonts.db"));Store.RefreshRuleTags();
   try{catalogue=OfficialCatalogue.Load(Path.Combine(AppContext.BaseDirectory,"Data","official-fonts.json"));}catch(Exception ex){status.Text="官网资料加载失败："+ex.Message;}
   using(var stream=AssetLoader.Open(new Uri("avares://FontFilter/Assets/FontFilter.ico")))Icon=new WindowIcon(stream);
@@ -51,7 +51,7 @@ public sealed partial class MainWindow:Window
  {
   var root=Ui.Grid("*","86,*,Auto,30");
   var header=Ui.Grid("210,*,Auto");header.Margin=new Thickness(24,0);
-  using(var image=AssetLoader.Open(new Uri("avares://FontFilter/Assets/FontFilter.png"))){var logo=new Image{Source=new Bitmap(image),Width=42,Height=42};Ui.Put(header,Ui.Row(logo,Ui.Stack(Ui.Text("字里行间",23,Brushes.White),Ui.Text("FONT ATELIER",9,new SolidColorBrush(Color.Parse("#B4CBC1"))))));}
+  using(var image=AssetLoader.Open(new Uri("avares://FontFilter/Assets/FontFilter.png"))){var logo=new Image{Source=new Bitmap(image),Width=42,Height=42};Ui.Put(header,Ui.Row(logo,Ui.Stack(new TextBlock{Text="字里行间",FontSize=23,Classes={"brand"}},new TextBlock{Text="FONT ATELIER",FontSize=9,Classes={"brand"},Opacity=.75})));}
   query.Margin=new Thickness(20,0,24,0);query.VerticalAlignment=VerticalAlignment.Center;Ui.Put(header,query,1);
   scanButton.Classes.Add("primary");var actions=Ui.Row(Ui.AsyncButton("主题",()=>Dialogs.Theme(this,Settings,SaveSettings),"header"),Ui.AsyncButton("官网资料",OpenCatalogue,"header"),Ui.AsyncButton("API 设置",()=>Dialogs.ApiSettings(this,Settings,SaveSettings),"header"),scanButton);Ui.Put(header,actions,2);
   var headerBorder=new Border{Child=header};headerBorder.Classes.Add("appHeader");Ui.Put(root,headerBorder);
@@ -59,9 +59,9 @@ public sealed partial class MainWindow:Window
   favoriteFilter.HorizontalAlignment=HorizontalAlignment.Stretch;favoriteFilter.Classes.Add("tag");
   var leftTop=Ui.Stack(Ui.Heading("本地字体"),favoriteFilter,Ui.Text("常用标签",10),new ScrollViewer{Content=quickTags,MaxHeight=110,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},Ui.AsyncButton("按特征挑选字体  →",()=>PickTags(true),"primary"),groupBox,counts);
   var left=Ui.Grid("*","Auto,*");leftTop.Margin=new Thickness(5,0,5,12);Ui.Put(left,leftTop);Ui.Put(left,fontList,0,1);
-  fontList.ItemTemplate=new FuncDataTemplate<FontRow>((row,_)=>Ui.Stack(new TextBlock{Text=row?.Title??"",FontSize=14,FontWeight=FontWeight.SemiBold,TextTrimming=TextTrimming.CharacterEllipsis},new TextBlock{Text=row?.Subtitle??"",FontSize=10,Foreground=Brushes.SlateGray,TextTrimming=TextTrimming.CharacterEllipsis},new TextBlock{Text=row?.Tags??"",FontSize=10,Foreground=new SolidColorBrush(Color.Parse("#426A54")),TextTrimming=TextTrimming.CharacterEllipsis}));
+  fontList.ItemTemplate=new FuncDataTemplate<FontRow>((row,_)=>Ui.Stack(new TextBlock{Text=row?.Title??"",FontSize=14,FontWeight=FontWeight.SemiBold,TextTrimming=TextTrimming.CharacterEllipsis},new TextBlock{Text=row?.Subtitle??"",FontSize=10,Classes={"muted"},TextTrimming=TextTrimming.CharacterEllipsis},new TextBlock{Text=row?.Tags??"",FontSize=10,Classes={"fontTags"},TextTrimming=TextTrimming.CharacterEllipsis}));
   Ui.Put(body,Ui.Card(left,12));
-  var main=Ui.Grid("*","Auto,Auto,Auto,*");Ui.Put(main,Ui.Heading("试排工作台",22));
+  var main=Ui.Grid("*","Auto,Auto,Auto,*");var workspaceHeader=Ui.Grid("*,Auto");Ui.Put(workspaceHeader,Ui.Heading("试排工作台",22));Ui.Put(workspaceHeader,Ui.AsyncButton("打开字体位置 ↗",RevealCurrentFont),1);Ui.Put(main,workspaceHeader);
   var selected=Ui.Stack(Ui.Text("当前字体",10),title,faceBox,favoriteButton);Ui.Put(main,Ui.Card(selected),0,1);
   var options=Ui.Row(sampleBox,Ui.Text("字号",11),sizeInput,Ui.Text("行距",11),lineInput);options.Margin=new Thickness(0,12,0,10);Ui.Put(main,options,0,2);
   sizeInput.Value=(decimal)Settings.Size;lineInput.Value=(decimal)Settings.LineHeight;
@@ -78,6 +78,7 @@ public sealed partial class MainWindow:Window
  }
  void Wire()
  {
+  WireWheelAdjustments();
   query.TextChanged+=(_,_)=>{if(ready)RefreshRows();};groupBox.IsCheckedChanged+=(_,_)=>{if(ready)RefreshRows();};
   fontList.SelectionChanged+=(_,_)=>{if(changing)return;var row=fontList.SelectedItems?.OfType<FontRow>().LastOrDefault();if(row!=null)SelectRow(row);};
   fontList.DoubleTapped+=(_,_)=>AddSelectedCompare();faceBox.SelectionChanged+=(_,_)=>{if(!changing&&faceBox.SelectedItem is FontRecord f)SelectFont(f);};
@@ -121,8 +122,8 @@ public sealed partial class MainWindow:Window
   if(State.Selected is {} font)previewPanel.Children.Add(PreviewCard(font,text));else previewPanel.Children.Add(Ui.Card(Ui.Text("点击“更新字体库”，扫描本机字体后开始试排。",17)));
   if(!sampleDraftDirty){sampleSeed=text;sampleEditor.Text=text;}previewPanel.Children.Add(sampleExpander);
   if(State.Comparison.Count==0)comparePanel.Children.Add(Ui.Card(Ui.Text("从左侧选字体，点击“加入对比”。最多六款使用同一段文字。",16)));
-  var comparisonGrid=Ui.Grid("*,*");comparisonGrid.RowDefinitions=new RowDefinitions("Auto,Auto,Auto");if(State.Comparison.Count>0)comparePanel.Children.Add(comparisonGrid);int comparisonIndex=0;
-  foreach(var item in State.Comparison){var card=PreviewCard(item,text,true);card.Margin=new Thickness(comparisonIndex%2==0?0:7,0,comparisonIndex%2==0?7:0,14);Ui.Put(comparisonGrid,card,comparisonIndex%2,comparisonIndex/2);comparisonIndex++;var chip=Ui.Button(item.Family+" ×",()=>{State.RemoveCompare(item.Id);RenderPreviews();},"tag");chip.Margin=new Thickness(0,2,5,2);comparisonChips.Children.Add(chip);}
+  foreach(var item in State.Comparison){comparePanel.Children.Add(PreviewCard(item,text,true));var chip=Ui.Button(item.Family+" ×",()=>{State.RemoveCompare(item.Id);RenderPreviews();},"tag");chip.Margin=new Thickness(0,2,5,2);comparisonChips.Children.Add(chip);}
+
  }
  Control BuildSampleEditor()
  {
