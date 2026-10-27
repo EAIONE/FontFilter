@@ -16,7 +16,8 @@ public sealed class UserSettings
 public static class SettingsStore
 {
  static string PathName=>Path.Combine(App.DataDirectory,"settings.json");
- public static UserSettings Load(){try{return JsonSerializer.Deserialize<UserSettings>(File.ReadAllText(PathName))??new();}catch{return new();}}
+ public static UserSettings Sanitize(UserSettings settings){settings.Size=double.IsFinite(settings.Size)?Math.Clamp(settings.Size,12,120):32;settings.LineHeight=double.IsFinite(settings.LineHeight)?Math.Clamp(settings.LineHeight,1,3):1.6;settings.Sample??=FontSamples.Simplified;settings.Sample=settings.Sample[..Math.Min(settings.Sample.Length,4000)];settings.Samples??=new();settings.Samples=settings.Samples.Where(p=>p.Key.Length>0&&p.Value!=null).Take(40).ToDictionary(p=>p.Key,p=>p.Value[..Math.Min(p.Value.Length,4000)]);settings.Api??=new();settings.TagUsage??=new();return settings;}
+ public static UserSettings Load(){try{return Sanitize(JsonSerializer.Deserialize<UserSettings>(File.ReadAllText(PathName))??new());}catch{return new();}}
  public static void Save(UserSettings settings)=>AtomicWrite(PathName,JsonSerializer.Serialize(settings,new JsonSerializerOptions{WriteIndented=true}));
  public static void AtomicWrite(string path,string text){Directory.CreateDirectory(Path.GetDirectoryName(path)!);var temp=path+".tmp";File.WriteAllText(temp,text);File.Move(temp,path,true);}
 }

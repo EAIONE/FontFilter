@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><OutputType>WinExe</OutputType><TargetFramework>net8.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><AssemblyName>FontFilter</AssemblyName><ApplicationIcon>Assets/FontFilter.ico</ApplicationIcon></PropertyGroup>
+ <ItemGroup><ProjectReference Include="../FontFilter.Core/FontFilter.Core.csproj"/><PackageReference Include="Avalonia.Desktop" Version="11.3.22"/><PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22"/></ItemGroup>
+ <ItemGroup><None Include="../../original/data/official-fonts.json" Link="Data/official-fonts.json" CopyToOutputDirectory="PreserveNewest"/><AvaloniaResource Include="Assets/**"/></ItemGroup>
+</Project>

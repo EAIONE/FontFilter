@@ -5,3 +5,6 @@ Isolated project: FontFilter-CrossPlatform, independent git repository on codex/
 Execution: inline; final independent code review.
 Preflight: shared core -> migration -> desktop services/UI -> packages. Preserve existing public core signatures.
 Ruling: deliver local self-contained builds without Apple notarization or Windows signing; no signing credentials supplied.
+
+Task 1: complete — core regression 32/32 passed.
+Task 2: complete — import regression 35/35 passed (WAL source, unique match, ambiguity, corruption).
