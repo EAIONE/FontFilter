@@ -10,6 +10,8 @@ public sealed class UserSettings
  public string SecondaryColor{get;set;}=ThemePalette.DefaultSecondary;
  public string AccentColor{get;set;}=ThemePalette.DefaultAccent;
  public string HeaderColor{get;set;}=ThemePalette.DefaultHeader;
+ public string BackgroundColor{get;set;}=ThemePalette.DefaultBackground;
+ public bool DetailsCollapsed{get;set;}
  public string SampleMode{get;set;}=FontSamples.AutoKey;
  public string Sample{get;set;}="山川有风骨，文字见精神。\n在纸页之间，寻找恰当的声音。汉字的疏密、笔画与节奏，共同构成阅读的气质。";
  public ApiOptions Api{get;set;}=new();

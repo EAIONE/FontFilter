@@ -35,6 +35,7 @@ public sealed partial class MainWindow:Window
  string sampleSeed="";bool sampleDraftDirty;
  bool ready,changing,onlyFavorites,closingAllowed,closePending;OfficialCatalogue? catalogue;
  List<FontRecord> matches=new();
+ Grid? bodyGrid;Border? detailsCard;Control? detailsBody;TextBlock? detailsHeading;Button? detailsToggle;
  public MainWindow()
  {
   Title="字里行间 · 字体筛选与试排";Width=1440;Height=920;MinWidth=1160;MinHeight=740;WindowStartupLocation=WindowStartupLocation.CenterScreen;
@@ -51,11 +52,12 @@ public sealed partial class MainWindow:Window
  {
   var root=Ui.Grid("*","86,*,Auto,30");
   var header=Ui.Grid("210,*,Auto");header.Margin=new Thickness(24,0);
-  using(var image=AssetLoader.Open(new Uri("avares://FontFilter/Assets/FontFilter.png"))){var logo=new Image{Source=new Bitmap(image),Width=42,Height=42};Ui.Put(header,Ui.Row(logo,Ui.Stack(new TextBlock{Text="字里行间",FontSize=23,Classes={"brand"}},new TextBlock{Text="FONT ATELIER",FontSize=9,Classes={"brand"},Opacity=.75})));}
+  using(var image=AssetLoader.Open(new Uri("avares://FontFilter/Assets/FontFilter.png"))){var logo=new Image{Name="BrandLogo",Source=new Bitmap(image),Width=44,Height=44,VerticalAlignment=VerticalAlignment.Center};var brand=Ui.Grid("44,12,*");brand.Name="BrandBlock";brand.VerticalAlignment=VerticalAlignment.Center;brand.Height=48;Ui.Put(brand,logo);var words=new StackPanel{Spacing=2,VerticalAlignment=VerticalAlignment.Center};words.Children.Add(new TextBlock{Name="BrandTitle",Text="字里行间",FontSize=23,LineHeight=28,FontWeight=FontWeight.SemiBold,Classes={"brand"}});words.Children.Add(new TextBlock{Name="BrandSubtitle",Text="FONT ATELIER",FontSize=9,LineHeight=12,Classes={"brand"},Opacity=.72});Ui.Put(brand,words,2);Ui.Put(header,brand);}
+
   query.Margin=new Thickness(20,0,24,0);query.VerticalAlignment=VerticalAlignment.Center;Ui.Put(header,query,1);
   scanButton.Classes.Add("primary");var actions=Ui.Row(Ui.AsyncButton("主题",()=>Dialogs.Theme(this,Settings,SaveSettings),"header"),Ui.AsyncButton("官网资料",OpenCatalogue,"header"),Ui.AsyncButton("API 设置",()=>Dialogs.ApiSettings(this,Settings,SaveSettings),"header"),scanButton);Ui.Put(header,actions,2);
   var headerBorder=new Border{Child=header};headerBorder.Classes.Add("appHeader");Ui.Put(root,headerBorder);
-  var body=Ui.Grid("265,18,*,18,265");body.Margin=new Thickness(22,18,22,14);
+  var body=Ui.Grid("265,18,*,18,265");bodyGrid=body;body.Margin=new Thickness(22,18,22,14);
   favoriteFilter.HorizontalAlignment=HorizontalAlignment.Stretch;favoriteFilter.Classes.Add("tag");
   var leftTop=Ui.Stack(Ui.Heading("本地字体"),favoriteFilter,Ui.Text("常用标签",10),new ScrollViewer{Content=quickTags,MaxHeight=110,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},Ui.AsyncButton("按特征挑选字体  →",()=>PickTags(true),"primary"),groupBox,counts);
   var left=Ui.Grid("*","Auto,*");leftTop.Margin=new Thickness(5,0,5,12);Ui.Put(left,leftTop);Ui.Put(left,fontList,0,1);
@@ -70,12 +72,14 @@ public sealed partial class MainWindow:Window
   tabs.Items.Add(new TabItem{Header="字体对比",Content=new ScrollViewer{Content=comparePanel,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled}});
   tabs.Margin=new Thickness(0,0,0,0);Ui.Put(main,tabs,0,3);Ui.Put(body,main,2);
   manual.MaxLength=4000;manual.Height=100;
-  var right=Ui.Stack(Ui.Heading("字体资料",18),details,Ui.Heading("人工标签",14),manual,Ui.Button("应用到左侧所选结果",ApplyManual,"primary"),Ui.AsyncButton("从标签库添加",()=>PickTags(false)),Ui.Text("切换字体时自动保存当前字重的编辑。",10,Brushes.SlateGray),Ui.Heading("介绍与来源",14),summary,Ui.AsyncButton("补充官网介绍",EditMetadata),Ui.AsyncButton("查找官方页面",FindOfficial),Ui.AsyncButton("分析当前字体",AnalyzeCurrent),Ui.Heading("工具",14),Ui.AsyncButton("导入旧版 Data",ImportLegacy),Ui.AsyncButton("打开数据文件夹",()=>OpenFolder(FontFilter.App.DataDirectory)),Ui.Text("数据保存在本机；字体文件不会被复制。",10,Brushes.SlateGray));
-  Ui.Put(body,Ui.Card(new ScrollViewer{Content=right,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled}),4);Ui.Put(root,body,0,1);
+  var right=Ui.Stack(details,Ui.Heading("人工标签",14),manual,Ui.Button("应用到左侧所选结果",ApplyManual,"primary"),Ui.AsyncButton("从标签库添加",()=>PickTags(false)),Ui.Text("切换字体时自动保存当前字重的编辑。",10,Brushes.SlateGray),Ui.Heading("介绍与来源",14),summary,Ui.AsyncButton("补充官网介绍",EditMetadata),Ui.AsyncButton("查找官方页面",FindOfficial),Ui.AsyncButton("分析当前字体",AnalyzeCurrent),Ui.Heading("工具",14),Ui.AsyncButton("导入旧版 Data",ImportLegacy),Ui.AsyncButton("打开数据文件夹",()=>OpenFolder(FontFilter.App.DataDirectory)),Ui.Text("数据保存在本机；字体文件不会被复制。",10,Brushes.SlateGray));
+  detailsBody=new ScrollViewer{Content=right,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled};detailsHeading=Ui.Heading("字体资料",18);detailsToggle=Ui.Button("→",ToggleDetails);detailsToggle.Name="ToggleDetails";detailsToggle.Padding=new Thickness(4);var infoHeader=Ui.Grid("*,Auto");Ui.Put(infoHeader,detailsHeading);Ui.Put(infoHeader,detailsToggle,1);var infoLayout=Ui.Grid("*","Auto,*");Ui.Put(infoLayout,infoHeader);Ui.Put(infoLayout,detailsBody,0,1);detailsCard=Ui.Card(infoLayout);detailsCard.Name="DetailsCard";Ui.Put(body,detailsCard,4);ApplyDetailsVisibility();Ui.Put(root,body,0,1);
   var footer=Ui.Grid("Auto,*,Auto");footer.Margin=new Thickness(24,10);Ui.Put(footer,Ui.Button("＋ 加入对比",AddSelectedCompare,"primary"));comparisonChips.Margin=new Thickness(16,0);Ui.Put(footer,comparisonChips,1);Ui.Put(footer,Ui.Row(Ui.Button("加入左侧所选",AddAllSelected),Ui.Button("清空",()=>{State.ClearCompare();RenderPreviews();})),2);Ui.Put(root,Ui.Card(footer,0),0,2);
   var bottom=Ui.Grid("*,Auto");bottom.Margin=new Thickness(24,0);status.VerticalAlignment=VerticalAlignment.Center;Ui.Put(bottom,status);pauseButton.Padding=cancelButton.Padding=new Thickness(10,2);pauseButton.MinHeight=cancelButton.MinHeight=23;Ui.Put(bottom,Ui.Row(pauseButton,cancelButton),1);Ui.Put(root,bottom,0,3);
   Content=root;
  }
+ void ToggleDetails(){Settings.DetailsCollapsed=!Settings.DetailsCollapsed;ApplyDetailsVisibility();SaveSettings();}
+ void ApplyDetailsVisibility(){if(bodyGrid==null||detailsCard==null||detailsBody==null||detailsHeading==null||detailsToggle==null)return;var collapsed=Settings.DetailsCollapsed;bodyGrid.ColumnDefinitions[4].Width=new GridLength(collapsed?38:265);bodyGrid.ColumnDefinitions[3].Width=new GridLength(collapsed?10:18);detailsBody.IsVisible=detailsHeading.IsVisible=!collapsed;detailsCard.Padding=new Thickness(collapsed?3:18);detailsToggle.Content=collapsed?"←":"→";ToolTip.SetTip(detailsToggle,collapsed?"展开字体资料":"向右收起字体资料");Avalonia.Automation.AutomationProperties.SetName(detailsToggle,collapsed?"展开字体资料":"收起字体资料");}
  void Wire()
  {
   WireWheelAdjustments();
