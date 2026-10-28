@@ -50,3 +50,5 @@ Verification: old live-preview test RED -> GREEN; old-track-overlay test RED -> 
 2026-10-28: 0.2.10 moves workspace modes directly beside heading, left aligned; increases font12→15, padding8×7→12×10 and minimum height42. Mac/Windows publishes pass, signatures verified, installed app screenshot confirms requested placement/size. Existing data backed up.
 
 2026-10-28: 0.2.11 adds independent book-page preview, default-hidden guides, physical-size estimate and per-display ruler calibration, fit mode and shared spacing cleanup. Core61 and final native UI verification pass. Mac installed with data backup; both platform packages updated. InDesign button deferred per user request.
+
+2026-10-28: 0.2.12 moves independent preview controls into a right sidebar, preserving full window height for the sheet. Both packages updated; Mac installed with data backup.

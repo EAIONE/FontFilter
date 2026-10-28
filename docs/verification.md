@@ -93,3 +93,6 @@ Layout-only adjustment: both publishes succeeded without warnings/errors; extrac
 - Verified live page updates, actual page width/scale, guide default and screen measurement; inspected full-page and actual-size screenshots. Installed app UI confirms independent preview and guide off.
 - Unified stack/row spacing, workspace header clearance, page columns and field spacing; narrow header action wraps.
 - User data backed up before installing0.2.11. Mac signature verified. Windows package cross-built, runtime not exercised here. InDesign integration deferred at user request; temporary test scripts removed from Adobe Scripts panels.
+
+## 0.2.12 · 2026-10-28
+Preview controls moved to a260-DIP right sidebar with independent scrolling. Build and both platform publishes succeeded; native screenshot confirms full-height book viewport and retained actual scale/default-hidden guides. Mac installed after data backup; strict signature passes.

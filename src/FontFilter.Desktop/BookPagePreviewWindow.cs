@@ -18,13 +18,13 @@ public sealed class BookPagePreviewWindow:Window
   settings=userSettings;save=saveSettings;Title="书页独立预览";Width=1100;Height=900;MinWidth=680;MinHeight=500;WindowStartupLocation=WindowStartupLocation.CenterOwner;
   FontFamily=owner.FontFamily;var screen=owner.Screens.ScreenFromWindow(owner);if(screen!=null){Width=Math.Min(1400,screen.WorkingArea.Width/screen.Scaling*.9);Height=Math.Min(1300,screen.WorkingArea.Height/screen.Scaling*.9);}
   scroll=new ScrollViewer{Content=actual,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,VerticalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Auto};
-  var toolbar=Ui.Row(mode,guides,Ui.Button("关闭",Close));toolbar.Spacing=16;
+  var toolbar=Ui.Stack(Ui.Text("浏览设置",18),mode,guides);toolbar.Spacing=16;
   var instructions=Ui.Text("用实物尺测量下方标尺的两端距离，填入实测毫米数后校准。同一显示器会记住校准结果。",11);
-  var calibration=Ui.Stack(instructions,new ScrollViewer{Content=ruler,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Auto},Ui.Row(Ui.Text("实测 mm",11),measured,Ui.Button("校准并记住",Calibrate),Ui.Button("恢复屏幕估算",ResetCalibration)));calibration.Spacing=12;
+  var calibration=Ui.Stack(instructions,new ScrollViewer{Content=ruler,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Auto},Ui.Stack(Ui.Text("实测 mm",11),measured,Ui.Button("校准并记住",Calibrate),Ui.Button("恢复屏幕估算",ResetCalibration)));calibration.Spacing=12;
   var calibrator=new Expander{Header="屏幕标尺校准",Content=calibration,IsExpanded=false};
-  var top=Ui.Stack(toolbar,pageInfo,scaleInfo,calibrator);top.Margin=new Thickness(20,16);top.Spacing=10;
+  var sidebar=Ui.Stack(toolbar,pageInfo,scaleInfo,calibrator,Ui.Button("关闭预览",Close));sidebar.Margin=new Thickness(20,24);sidebar.Spacing=20;sidebar.Name="PreviewSidebar";
   var viewport=new Grid{Background=new SolidColorBrush(Color.Parse("#E7EBE8"))};viewport.Children.Add(scroll);viewport.Children.Add(fit);
-  var root=Ui.Grid("*","Auto,*");Ui.Put(root,top);Ui.Put(root,viewport,0,1);Content=root;
+  var root=Ui.Grid("*,260","*");Ui.Put(root,viewport);Ui.Put(root,new ScrollViewer{Content=sidebar,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},1);Content=root;
   mode.SelectionChanged+=(_,_)=>ApplyMode();guides.IsCheckedChanged+=(_,_)=>RefreshPage();Opened+=(_,_)=>RefreshMonitor(true);PositionChanged+=(_,_)=>RefreshMonitor();SizeChanged+=(_,_)=>RefreshMonitor();
   document=page;RefreshMonitor(true);ApplyMode();
  }
