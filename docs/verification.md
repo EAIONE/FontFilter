@@ -56,3 +56,10 @@ H/S/B 改为圆角色条：彩虹色相、当前色相的饱和度梯度、黑�
 - Added real clipboard verification, comparison current-card visibility, collapsed details height, A5 page creation and live top-margin checks. Screenshot verified numeric values remain visible after widening fields.
 - Review identified final-line descender clipping at tight leading; page capacity now reserves font descent.
 - Windows runtime not exercised on this Mac.
+
+## 0.2.6 · 2026-10-28
+- Core 52/52: OR labels combine categories, retain favorite and active restrictions; default/custom paper dimension sanitization.
+- Desktop build and Mac/Windows self-contained publish succeeded. Review found no confirmed significant regression.
+- Real-font page UI verifies default185×260, preset210×285, margins, populated candidates and Viewbox fit at1440×920 and1160×740; screenshots show full page at both sizes.
+- Resizing transferred focus to search in the existing theme test. Border assertion now accepts the specified normal/hover/focus theme brushes instead of incorrectly demanding normal state while focused.
+- Final extracted signed Mac package full verification exited0, including theme/UI checks; installed0.2.6 after complete user-data backup. Windows PE x64 build verified; Windows runtime not exercised here.
