@@ -46,3 +46,5 @@ Verification: old live-preview test RED -> GREEN; old-track-overlay test RED -> 
 2026-10-28: 0.2.8 fixes asynchronous query events reverting label union; implements single1P filled book specimen and fixed two-character paragraph indent, candidate source restricted to comparison, numeric/row alignment. Final native verification and core53 pass; Mac installed and both packages updated.
 
 2026-10-28: 0.2.9 introduces three-column book workspace, title-right mode buttons, hides details inpage, adds simplified/traditional/English/mixed specimens and tailored book linebreaking. Core58 and final native verification pass. Both packages updated, Mac installed with existing user data retained.
+
+2026-10-28: 0.2.10 moves workspace modes directly beside heading, left aligned; increases font12→15, padding8×7→12×10 and minimum height42. Mac/Windows publishes pass, signatures verified, installed app screenshot confirms requested placement/size. Existing data backed up.

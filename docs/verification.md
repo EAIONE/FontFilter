@@ -82,3 +82,6 @@ H/S/B 改为圆角色条：彩虹色相、当前色相的饱和度梯度、黑�
 - Screenshots inspect default Chinese and English full-page samples and small-window fit. English/traditional selection updates the page; old sample keys migrate.
 - Core tests closing/opening punctuation, whole words, combining graphemes, long-word non-splitting and script presets. Renderer explicitly honors prewrapped lines instead of wrapping them again.
 - Final extracted signed Mac package full verification exits0. Mac0.2.9 installed after user-data backup; both platform packages built. Windows runtime not exercised here.
+
+## 0.2.10 · 2026-10-28
+Layout-only adjustment: both publishes succeeded without warnings/errors; extracted and installed Mac strict signature verification passed. Inspected installed UI screenshot: three larger modes immediately right of heading, left aligned; reveal action remains far right. No behavioral changes; full regression not repeated.
