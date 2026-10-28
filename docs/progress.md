@@ -44,3 +44,5 @@ Verification: old live-preview test RED -> GREEN; old-track-overlay test RED -> 
 2026-10-28: 0.2.7 responds to request for fully populated paragraph book pages. Adds original long-form indented book specimen, independent page sample/edit mode and pagination; core53 and final native UI verification pass; both packages updated.
 
 2026-10-28: 0.2.8 fixes asynchronous query events reverting label union; implements single1P filled book specimen and fixed two-character paragraph indent, candidate source restricted to comparison, numeric/row alignment. Final native verification and core53 pass; Mac installed and both packages updated.
+
+2026-10-28: 0.2.9 introduces three-column book workspace, title-right mode buttons, hides details inpage, adds simplified/traditional/English/mixed specimens and tailored book linebreaking. Core58 and final native verification pass. Both packages updated, Mac installed with existing user data retained.

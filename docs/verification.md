@@ -75,3 +75,10 @@ H/S/B 改为圆角色条：彩虹色相、当前色相的饱和度梯度、黑�
 - Numeric template editor checks both horizontal and vertical centering; screenshots inspect input and row label placement.
 - Page candidate count equals comparison count; selecting comparison candidate selects its exact style; clearing comparison leaves zero candidates. Fixed one sheet, sufficient generated overflow, all paragraph starts normalize to two fixed em spaces.
 - Page default185×260 and small-window fitting remain passing. User data backed up before installation. Windows runtime not exercised on this Mac.
+
+## 0.2.9 · 2026-10-28
+- Core58/58, Desktop0 warnings/errors; code review found no confirmed significant bugs.
+- Native UI verifies left-candidates/middle-page/right-settings positions, details hidden with zero reserved width in page mode, and restored outside page mode. Native tab headers are hidden and title-right mode buttons drive the same content selection.
+- Screenshots inspect default Chinese and English full-page samples and small-window fit. English/traditional selection updates the page; old sample keys migrate.
+- Core tests closing/opening punctuation, whole words, combining graphemes, long-word non-splitting and script presets. Renderer explicitly honors prewrapped lines instead of wrapping them again.
+- Final extracted signed Mac package full verification exits0. Mac0.2.9 installed after user-data backup; both platform packages built. Windows runtime not exercised here.

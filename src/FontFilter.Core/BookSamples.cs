@@ -1,7 +1,10 @@
 namespace FontFilter;
 public static class BookSamples
 {
- public const string DefaultKey="书籍内文（分段）";
+ public const string DefaultKey="简体内文（分段）",TraditionalKey="繁體內文（分段）",EnglishKey="English · paragraphs",MixedKey="中英混排（分段）";
+ public const string Traditional="清晨的光從窗邊緩緩移過，落在剛剛翻開的書頁上。紙張微微泛著溫暖的顏色，字與字之間留著安靜的空隙。閱讀有時並不急於尋找答案，我們只是順著一行行文字向前走，讓遠處的風景與眼前的生活慢慢相遇。\n一本書的模樣，往往在閱讀開始之前就已留下印象。開本決定了握在手中的分量，版心安排著目光行進的方向，天頭與地腳為文字留下呼吸的餘地。那些看似細小的距離，並不是空白的浪費，而是讓內容變得清楚、讓長時間閱讀更加舒適的必要部分。\n我們辨認一款字體，不只看單個字的輪廓，也看它們排列在一起時形成的節奏。橫畫和豎畫的輕重，轉折處的收放，字面之間的疏密，都在整段文字中彼此回應。正文所需要的，常常是一種耐心而穩定的聲音。";
+ public const string English="Morning light moves slowly across the desk and settles on the open book. Reading gives us time to notice what a hurried day can hide: a quiet street, a familiar voice, or a question that deserves another look. The page is a small space, yet it can hold an entire landscape of thoughts.\nTypography shapes that space. A comfortable line length helps the eye return to the beginning of the next line, while generous margins give the text room to breathe. Letters, words, and paragraphs should form a steady rhythm, allowing the reader to follow the meaning without unnecessary interruption.\nA typeface reveals its character through more than a single letter. Its proportions, spacing, and contrast become clearer in continuous reading. Comparing a full page shows how individual details work together, and how a change in size or leading can alter the texture of the whole.\nAt the end of the evening, we close the book but keep something of its atmosphere. An image or a sentence may return later, quietly changing the way we understand an ordinary moment. Good pages make room for that encounter between the words and the reader.";
+ public const string Mixed="阅读一本书，也是在体会 Typography 如何组织信息。字形、段落与留白共同形成阅读节奏；在中英文混排中，完整的 English words 应保持连贯，不能为了凑满一行而随意截断。\n版心决定了文字的边界，Line spacing 则影响每一行之间的呼吸。我们可以比较不同字体的正文效果，观察中文标点、英文引号以及数字（185 × 260 mm）如何与周围的文字协调。\n“清晰而自然”，是排版希望达到的状态。Good typography supports reading, rather than distracting from it. 调整字号、字距和行距时，应同时关注一行文字的细节与整页的灰度，让内容在稳定的秩序中展开。";
  public static string Text{get;}=Build();
  static string Build()
  {

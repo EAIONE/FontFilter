@@ -21,6 +21,7 @@
   <Style Selector="CheckBox"><Setter Property="Foreground" Value="{DynamicResource CanvasTextBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource FieldHoverBorderBrush}"/></Style>
   <Style Selector="Border.card CheckBox"><Setter Property="Foreground" Value="#203C36"/></Style>
   <Style Selector="CheckBox /template/ Border"><Setter Property="BorderBrush" Value="{DynamicResource FieldHoverBorderBrush}"/><Setter Property="CornerRadius" Value="4"/></Style>
+  <Style Selector="TabControl.workspaceTabs /template/ ItemsPresenter#PART_ItemsPresenter"><Setter Property="IsVisible" Value="False"/></Style>
   <Style Selector="TabItem"><Setter Property="Foreground" Value="{DynamicResource CanvasTextBrush}"/></Style>
   <Style Selector="TextBox, ComboBox, NumericUpDown"><Setter Property="Foreground" Value="#203C36"/><Setter Property="BorderBrush" Value="{DynamicResource FieldBorderBrush}"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="8"/><Setter Property="Background" Value="{DynamicResource FieldFillBrush}"/></Style>
   <Style Selector="Button"><Setter Property="VerticalContentAlignment" Value="Center"/></Style>
