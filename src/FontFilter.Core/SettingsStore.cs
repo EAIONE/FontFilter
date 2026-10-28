@@ -11,6 +11,7 @@ public sealed class UserSettings
  public string AccentColor{get;set;}=ThemePalette.DefaultAccent;
  public string HeaderColor{get;set;}=ThemePalette.DefaultHeader;
  public string BackgroundColor{get;set;}=ThemePalette.DefaultBackground;
+ public string PageSampleMode{get;set;}=BookSamples.DefaultKey;public string PageSampleText{get;set;}="";
  public double PageWidth{get;set;}=185;public double PageHeight{get;set;}=260;
  public double[] PageLayout{get;set;}=new double[]{20,20,22,18,12,1.6,0};
  public bool DetailsCollapsed{get;set;}

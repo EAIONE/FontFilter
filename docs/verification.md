@@ -63,3 +63,8 @@ H/S/B 改为圆角色条：彩虹色相、当前色相的饱和度梯度、黑�
 - Real-font page UI verifies default185×260, preset210×285, margins, populated candidates and Viewbox fit at1440×920 and1160×740; screenshots show full page at both sizes.
 - Resizing transferred focus to search in the existing theme test. Border assertion now accepts the specified normal/hover/focus theme brushes instead of incorrectly demanding normal state while focused.
 - Final extracted signed Mac package full verification exited0, including theme/UI checks; installed0.2.6 after complete user-data backup. Windows PE x64 build verified; Windows runtime not exercised here.
+
+## 0.2.7 · 2026-10-28
+- Core53/53 and Desktop build0 warnings/errors. Book sample is3500–4000 characters with over20 indented paragraphs.
+- Final extracted Mac full UI verification exits0: default page contains more than500 characters, automatic pagination produces multiple pages, preset and small-window fitting checks remain passing. Screenshot confirms full paragraphs through the bottom of the type area.
+- Mac installed after full user data backup. Windows package cross-built; Windows runtime not exercised here.
