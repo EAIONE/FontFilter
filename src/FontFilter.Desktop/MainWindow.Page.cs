@@ -8,7 +8,7 @@ using SkiaSharp;
 namespace FontFilter.Desktop;
 public sealed partial class MainWindow
 {
- readonly ListBox pageCandidates=new(){Background=Brushes.Transparent,BorderThickness=new Thickness(0)};
+ readonly ListBox pageCandidates=new(){Background=Brushes.Transparent,BorderThickness=new Thickness(0),Padding=new Thickness(0,0,24,0),ClipToBounds=true};
  readonly Viewbox pageFit=new(){Stretch=Stretch.Uniform,HorizontalAlignment=HorizontalAlignment.Stretch,VerticalAlignment=VerticalAlignment.Stretch,Margin=new Thickness(14)};
  readonly TextBlock pageCaption=Ui.Text("",11);
  readonly NumericUpDown paperWidth=PageNumber(185,50,1200),paperHeight=PageNumber(260,50,1200);
@@ -35,7 +35,8 @@ public sealed partial class MainWindow
   paperWidth.ValueChanged+=(_,_)=>PaperChanged();paperHeight.ValueChanged+=(_,_)=>PaperChanged();
   var controls=new WrapPanel{Orientation=Orientation.Horizontal};
   foreach(var pair in new[]{("天头 mm",pageTop),("地脚 mm",pageBottom),("订口 mm",pageInner),("切口 mm",pageOuter),("字号 pt",pageSize),("行距 倍",pageLeading),("字距 pt",pageTracking)}){var field=Ui.Stack(Ui.Text(pair.Item1,10),pair.Item2);field.Spacing=6;field.Margin=new Thickness(0,0,12,12);controls.Children.Add(field);pair.Item2.ValueChanged+=(_,_)=>{if(ready){Settings.PageLayout=inputs.Select(v=>(double)(v.Value??0)).ToArray();SaveSettings();RenderPageTypesetting();}};}
-  pageCandidates.ItemTemplate=new FuncDataTemplate<FontRow>((row,_)=>{var content=Ui.Stack(CopyableName(row?.Title??"",13),Ui.Text(row?.Subtitle??"",10));content.Spacing=6;try{if(row?.Fonts.FirstOrDefault() is {} font)content.Children.Add(new GlyphPreview{Glyph=FontScanner.Resolve(font),Text="山川有风骨，文字见精神。",Size=16,LineSpacing=1.3});}catch{}return content;});
+  pageCandidates.Classes.Add("bookCandidates");ScrollViewer.SetHorizontalScrollBarVisibility(pageCandidates,Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled);
+  pageCandidates.ItemTemplate=new FuncDataTemplate<FontRow>((row,_)=>{var content=Ui.Stack(CopyableName(row?.Title??"",13),Ui.Text(row?.Subtitle??"",10));content.Spacing=6;try{if(row?.Fonts.FirstOrDefault() is {} font)content.Children.Add(new GlyphPreview{Glyph=FontScanner.Resolve(font),Text="山川有风骨，文字见精神。",Size=16,LineSpacing=1.3});}catch{}var card=Ui.Card(content,10);card.Classes.Add("bookCandidate");card.ClearValue(Border.BackgroundProperty);card.ClipToBounds=true;return card;});
   pageCandidates.SelectionChanged+=(_,_)=>{if(!updatingBook&&pageCandidates.SelectedItem is FontRow row){bookCandidate=row.Fonts[0];RenderPageTypesetting();}};
   bookFace.ItemTemplate=new FuncDataTemplate<FontRecord>((f,_)=>Ui.Text(f?.Face??"",12));bookFace.SelectionChanged+=(_,_)=>{if(ready&&!updatingBook&&bookFace.SelectedItem is FontRecord font){if(bookCandidate!=null){bookCandidate=font;RenderPageTypesetting();}else{changing=true;faceBox.SelectedItem=font;changing=false;SelectFont(font);}}};
   bookSample.SelectionChanged+=(_,_)=>{if(ready&&!updatingBook&&bookSample.SelectedItem is string mode){Settings.PageSampleMode=mode;SaveSettings();RenderPageTypesetting();}};

@@ -103,3 +103,6 @@ Core61/61 including50mm calibration reference test. Both publishes pass; install
 ## 0.2.14 · 2026-10-28
 Comparison-only padding changed24→8 vertically, stack gap12→6; horizontal padding, glyph size and leading retained. Default two-line card height approximately75% of previous. Both platform publishes and installed Mac strict signature pass; data backed up.
 Final native UI verification exits0; comparison screenshot inspected with larger33pt sample and wrapping preserved.
+
+## 0.2.15 · 2026-10-28
+Reproduced candidate overflow with six populated comparison candidates: new safe-width assertion fails on prior implementation. Disable horizontal scrolling, reserve24DIP for vertical scrollbar, stretch items and add separated rounded cards. Native verification after fix exits0; populated candidate screenshot confirms two-line wrapping and no obstruction. Mac Dock artwork now occupies82% of the icon canvas with transparent surrounding padding. Both platform publishes succeed; Mac data backed up and signature verified after installation.

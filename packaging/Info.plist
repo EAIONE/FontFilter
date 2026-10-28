@@ -5,8 +5,8 @@
 <key>CFBundleIdentifier</key><string>local.fontfilter.desktop</string>
 <key>CFBundleName</key><string>字里行间</string>
 <key>CFBundleDisplayName</key><string>字里行间</string>
-<key>CFBundleVersion</key><string>0.2.14</string>
-<key>CFBundleShortVersionString</key><string>0.2.14</string>
+<key>CFBundleVersion</key><string>0.2.15</string>
+<key>CFBundleShortVersionString</key><string>0.2.15</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleIconFile</key><string>FontFilter.icns</string>
 <key>LSMinimumSystemVersion</key><string>12.0</string>

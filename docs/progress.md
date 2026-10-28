@@ -56,3 +56,5 @@ Verification: old live-preview test RED -> GREEN; old-track-overlay test RED -> 
 2026-10-28: 0.2.13 fixes clipped calibration ruler: use50mm maximum reference, shorten dynamically to190DIP, remove horizontal scrolling, synchronize measured default and calibration formula. Native UI inspected, both packages updated.
 
 2026-10-28: 0.2.14 compacts comparison rows to approximately three quarters by reducing vertical whitespace. Both packages updated; Mac installed after backup.
+
+2026-10-28: 0.2.15 fixes page candidate overflow and adds card separation/selection styling. Adds populated six-candidate width regression. Mac Dock icon normalized to82% artwork size. Both packages updated, Mac installed after backup.

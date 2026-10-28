@@ -14,6 +14,9 @@
   <Style Selector="TextBlock.fontTags"><Setter Property="Foreground" Value="{DynamicResource InkBrush}"/></Style>
   <Style Selector="ListBoxItem:selected TextBlock"><Setter Property="Foreground" Value="{DynamicResource SoftTextBrush}"/></Style>
   <Style Selector="TextBox"><Setter Property="CornerRadius" Value="6"/><Setter Property="Padding" Value="10,7"/></Style>
+  <Style Selector="ListBox.bookCandidates ListBoxItem"><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,0,0,10"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/></Style>
+  <Style Selector="Border.bookCandidate"><Setter Property="Background" Value="White"/></Style>
+  <Style Selector="ListBoxItem:selected Border.bookCandidate"><Setter Property="Background" Value="{DynamicResource SoftBrush}"/></Style>
   <Style Selector="ListBoxItem"><Setter Property="Padding" Value="10,7"/><Setter Property="CornerRadius" Value="6"/></Style>
   <Style Selector="ListBoxItem:selected"><Setter Property="Background" Value="{DynamicResource SoftBrush}"/></Style>
   <Style Selector="Slider.colorChannel:not(:pointerover) /template/ RepeatButton /template/ Border#TrackBackground, Slider.colorChannel:pointerover /template/ RepeatButton /template/ Border#TrackBackground"><Setter Property="Opacity" Value="0"/></Style>
