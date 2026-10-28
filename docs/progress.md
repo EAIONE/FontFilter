@@ -52,3 +52,5 @@ Verification: old live-preview test RED -> GREEN; old-track-overlay test RED -> 
 2026-10-28: 0.2.11 adds independent book-page preview, default-hidden guides, physical-size estimate and per-display ruler calibration, fit mode and shared spacing cleanup. Core61 and final native UI verification pass. Mac installed with data backup; both platform packages updated. InDesign button deferred per user request.
 
 2026-10-28: 0.2.12 moves independent preview controls into a right sidebar, preserving full window height for the sheet. Both packages updated; Mac installed with data backup.
+
+2026-10-28: 0.2.13 fixes clipped calibration ruler: use50mm maximum reference, shorten dynamically to190DIP, remove horizontal scrolling, synchronize measured default and calibration formula. Native UI inspected, both packages updated.

@@ -96,3 +96,6 @@ Layout-only adjustment: both publishes succeeded without warnings/errors; extrac
 
 ## 0.2.12 · 2026-10-28
 Preview controls moved to a260-DIP right sidebar with independent scrolling. Build and both platform publishes succeeded; native screenshot confirms full-height book viewport and retained actual scale/default-hidden guides. Mac installed after data backup; strict signature passes.
+
+## 0.2.13 · 2026-10-28
+Core61/61 including50mm calibration reference test. Both publishes pass; installed Mac signature verified. Native expanded calibration screenshot confirms complete0/25/50mm ruler and no horizontal scrollbar. Ruler dynamically shortens at larger physical scales, correction uses displayed reference length. User data backed up.

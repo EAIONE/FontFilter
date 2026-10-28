@@ -7,9 +7,9 @@ public static class PhysicalPageScale
   if(!double.IsFinite(pixelWidth)||!double.IsFinite(scaling)||!double.IsFinite(widthMillimeters)||pixelWidth<=0||scaling<=0||widthMillimeters<=0)throw new ArgumentOutOfRangeException(nameof(widthMillimeters));
   return pixelWidth/scaling/widthMillimeters/DipPerMillimeter;
  }
- public static double Correct(double currentCorrection,double measuredMillimeters)
+ public static double Correct(double currentCorrection,double measuredMillimeters,double referenceMillimeters=100)
  {
   if(!double.IsFinite(currentCorrection)||!double.IsFinite(measuredMillimeters)||currentCorrection<=0||measuredMillimeters<=0)throw new ArgumentOutOfRangeException(nameof(measuredMillimeters));
-  return Math.Clamp(currentCorrection*100/measuredMillimeters,.25,4);
+  return Math.Clamp(currentCorrection*referenceMillimeters/measuredMillimeters,.25,4);
  }
 }
