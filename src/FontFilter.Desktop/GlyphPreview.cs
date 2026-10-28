@@ -9,6 +9,7 @@ namespace FontFilter.Desktop;
 public sealed class GlyphPreview:Control
 {
  public SKTypeface? Glyph{get;set;}public string Text{get;set;}="";public double Size{get;set;}=32;public double LineSpacing{get;set;}=1.6;
+ public double Tracking{get;set;}
  double cachedWidth=-1,cachedHeight;PlacedGlyph[] positions=Array.Empty<PlacedGlyph>();
  public string Missing=>Glyph==null?"":GlyphCoverage.Missing(Text,v=>Glyph.GetGlyph(v)!=0);
 
@@ -22,7 +23,7 @@ public sealed class GlyphPreview:Control
    if(rune.Value=='\n'){x=0;y+=step;continue;}
    var text=rune.Value=='\t'?"    ":rune.ToString();var index=Glyph.GetGlyph(rune.Value);var advance=index==0?(float)Size:Math.Max((float)Size*.08f,paint.MeasureText(text));
    if(x+advance>width&&x>0){x=0;y+=step;}
-   list.Add(new(text,x,y,index==0));x+=advance;
+   list.Add(new(text,x,y,index==0));x+=Math.Max(1,advance+(float)Tracking);
   }
   positions=list.ToArray();cachedHeight=y+step*.45;
  }

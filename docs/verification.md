@@ -49,3 +49,10 @@ H/S/B 改为圆角色条：彩虹色相、当前色相的饱和度梯度、黑�
 界面配色顺序改为主题色、辅助色、强调色、滚动条色、底色；为兼容旧数据，旧 HeaderColor 继续存储顶栏/主题色，旧 ThemeColor 仅用于滚动条，新增 BackgroundColor 控制整页底色。滚动条使用准确选色而非自动加黑，标签说明使用偏暗主题色，色块选中边框减弱。
 字体资料支持右侧收起/展开并持久化状态，保留未保存编辑。左上角标志与中英文标题统一左边线和垂直居中。搜索、下拉、数字输入、样文展开、弹窗和复选框改用柔和主题描边及一致焦点色。
 49/49 核心回归通过；实际 UI 检查五色角色、底色/滚动条准确映射、资料折叠与草稿保留、标志文字几何对齐、输入控件描边、深色底色可读性、保存/取消及实时预览。深色复选框回归先复现失败，修复后通过。0 警告、0 错误；最终 Mac 解压包严格签名与完整 --verify 退出 0。独立审阅未发现其他重要缺陷。用户数据备份后安装升级，Windows 包已同步构建，未在 Windows 实机运行。
+
+## 0.2.5 · 2026-10-28
+- Core 49/49；Desktop build 0 warnings/errors；Mac/Windows self-contained publish succeeded.
+- Extracted final Mac package strict code-sign verification passed; isolated real-font UI verification exited 0 (4278 styles, incremental reuse 4278). Existing one unreadable bitmap font warning retained.
+- Added real clipboard verification, comparison current-card visibility, collapsed details height, A5 page creation and live top-margin checks. Screenshot verified numeric values remain visible after widening fields.
+- Review identified final-line descender clipping at tight leading; page capacity now reserves font descent.
+- Windows runtime not exercised on this Mac.

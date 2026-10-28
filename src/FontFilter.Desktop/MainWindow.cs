@@ -35,6 +35,7 @@ public sealed partial class MainWindow:Window
  string sampleSeed="";bool sampleDraftDirty;
  bool ready,changing,onlyFavorites,closingAllowed,closePending;OfficialCatalogue? catalogue;
  List<FontRecord> matches=new();
+ Control? filterControls;Border? selectedCard;readonly TextBlock favoriteNotice=Ui.Text("",10);
  Grid? bodyGrid;Border? detailsCard;Control? detailsBody;TextBlock? detailsHeading;Button? detailsToggle;
  public MainWindow()
  {
@@ -59,17 +60,24 @@ public sealed partial class MainWindow:Window
   var headerBorder=new Border{Child=header};headerBorder.Classes.Add("appHeader");Ui.Put(root,headerBorder);
   var body=Ui.Grid("265,18,*,18,265");bodyGrid=body;body.Margin=new Thickness(22,18,22,14);
   favoriteFilter.HorizontalAlignment=HorizontalAlignment.Stretch;favoriteFilter.Classes.Add("tag");
-  var leftTop=Ui.Stack(Ui.Heading("本地字体"),favoriteFilter,Ui.Text("常用标签",10),new ScrollViewer{Content=quickTags,MaxHeight=110,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},Ui.AsyncButton("按特征挑选字体  →",()=>PickTags(true),"primary"),groupBox,counts);
+  filterControls=Ui.Stack(Ui.Text("常用标签",10),new ScrollViewer{Content=quickTags,MaxHeight=110,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},Ui.AsyncButton("按特征挑选字体  →",()=>PickTags(true),"primary"),groupBox);
+  favoriteNotice.IsVisible=false;var leftTop=Ui.Stack(Ui.Heading("本地字体"),favoriteFilter,favoriteNotice,filterControls,counts);
   var left=Ui.Grid("*","Auto,*");leftTop.Margin=new Thickness(5,0,5,12);Ui.Put(left,leftTop);Ui.Put(left,fontList,0,1);
-  fontList.ItemTemplate=new FuncDataTemplate<FontRow>((row,_)=>Ui.Stack(new TextBlock{Text=row?.Title??"",FontSize=14,FontWeight=FontWeight.SemiBold,TextTrimming=TextTrimming.CharacterEllipsis},new TextBlock{Text=row?.Subtitle??"",FontSize=10,Classes={"muted"},TextTrimming=TextTrimming.CharacterEllipsis},new TextBlock{Text=row?.Tags??"",FontSize=10,Classes={"fontTags"},TextTrimming=TextTrimming.CharacterEllipsis}));
+  fontList.ItemTemplate=new FuncDataTemplate<FontRow>((row,_)=>{var name=CopyableName(row?.Title??"",14);name.FontWeight=FontWeight.SemiBold;name.TextTrimming=TextTrimming.CharacterEllipsis;return new StackPanel{Spacing=3,Children={name,new TextBlock{Text=row?.Subtitle??"",FontSize=10,Classes={"muted"}},new TextBlock{Text=row?.Tags??"",FontSize=10,Classes={"fontTags"},TextTrimming=TextTrimming.CharacterEllipsis}}};});
+  fontList.PointerEntered+=(_,_)=>{if(filterControls!=null)filterControls.IsVisible=false;};
+  leftTop.PointerEntered+=(_,_)=>{if(filterControls!=null)filterControls.IsVisible=true;};
+
   Ui.Put(body,Ui.Card(left,12));
   var main=Ui.Grid("*","Auto,Auto,Auto,*");var workspaceHeader=Ui.Grid("*,Auto");Ui.Put(workspaceHeader,Ui.Heading("试排工作台",22));Ui.Put(workspaceHeader,Ui.AsyncButton("打开字体位置 ↗",RevealCurrentFont),1);Ui.Put(main,workspaceHeader);
-  var selected=Ui.Stack(Ui.Text("当前字体",10),title,faceBox,favoriteButton);Ui.Put(main,Ui.Card(selected),0,1);
+  var selected=Ui.Stack(Ui.Text("当前字体",10),title,faceBox,favoriteButton);selectedCard=Ui.Card(selected);Ui.Put(main,selectedCard,0,1);
+  title.Tapped+=async(_,_)=>{if(State.Selected is {} f)await CopyFontName(f.Family);};ToolTip.SetTip(title,"点击复制字体名称");title.Cursor=new Cursor(StandardCursorType.Hand);
   var options=Ui.Row(sampleBox,Ui.Text("字号",11),sizeInput,Ui.Text("行距",11),lineInput);options.Margin=new Thickness(0,12,0,10);Ui.Put(main,options,0,2);
   sizeInput.Value=(decimal)Settings.Size;lineInput.Value=(decimal)Settings.LineHeight;
   RefreshSampleModes();
   tabs.Items.Add(new TabItem{Header="字体试排",Content=new ScrollViewer{Content=previewPanel,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled}});
   tabs.Items.Add(new TabItem{Header="字体对比",Content=new ScrollViewer{Content=comparePanel,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled}});
+  tabs.Items.Add(new TabItem{Header="页面试排",Content=BuildPageTypesetting()});
+  tabs.SelectionChanged+=(_,_)=>{if(selectedCard!=null)selectedCard.IsVisible=tabs.SelectedIndex!=1;};
   tabs.Margin=new Thickness(0,0,0,0);Ui.Put(main,tabs,0,3);Ui.Put(body,main,2);
   manual.MaxLength=4000;manual.Height=100;
   var right=Ui.Stack(details,Ui.Heading("人工标签",14),manual,Ui.Button("应用到左侧所选结果",ApplyManual,"primary"),Ui.AsyncButton("从标签库添加",()=>PickTags(false)),Ui.Text("切换字体时自动保存当前字重的编辑。",10,Brushes.SlateGray),Ui.Heading("介绍与来源",14),summary,Ui.AsyncButton("补充官网介绍",EditMetadata),Ui.AsyncButton("查找官方页面",FindOfficial),Ui.AsyncButton("分析当前字体",AnalyzeCurrent),Ui.Heading("工具",14),Ui.AsyncButton("导入旧版 Data",ImportLegacy),Ui.AsyncButton("打开数据文件夹",()=>OpenFolder(FontFilter.App.DataDirectory)),Ui.Text("数据保存在本机；字体文件不会被复制。",10,Brushes.SlateGray));
@@ -79,7 +87,7 @@ public sealed partial class MainWindow:Window
   Content=root;
  }
  void ToggleDetails(){Settings.DetailsCollapsed=!Settings.DetailsCollapsed;ApplyDetailsVisibility();SaveSettings();}
- void ApplyDetailsVisibility(){if(bodyGrid==null||detailsCard==null||detailsBody==null||detailsHeading==null||detailsToggle==null)return;var collapsed=Settings.DetailsCollapsed;bodyGrid.ColumnDefinitions[4].Width=new GridLength(collapsed?38:265);bodyGrid.ColumnDefinitions[3].Width=new GridLength(collapsed?10:18);detailsBody.IsVisible=detailsHeading.IsVisible=!collapsed;detailsCard.Padding=new Thickness(collapsed?3:18);detailsToggle.Content=collapsed?"←":"→";ToolTip.SetTip(detailsToggle,collapsed?"展开字体资料":"向右收起字体资料");Avalonia.Automation.AutomationProperties.SetName(detailsToggle,collapsed?"展开字体资料":"收起字体资料");}
+ void ApplyDetailsVisibility(){if(bodyGrid==null||detailsCard==null||detailsBody==null||detailsHeading==null||detailsToggle==null)return;var collapsed=Settings.DetailsCollapsed;bodyGrid.ColumnDefinitions[4].Width=new GridLength(collapsed?38:265);bodyGrid.ColumnDefinitions[3].Width=new GridLength(collapsed?10:18);detailsBody.IsVisible=detailsHeading.IsVisible=!collapsed;detailsCard.Padding=new Thickness(collapsed?3:18);detailsCard.VerticalAlignment=collapsed?VerticalAlignment.Top:VerticalAlignment.Stretch;detailsCard.Background=collapsed?Brushes.Transparent:Brushes.White;detailsCard.BorderThickness=new Thickness(collapsed?0:1);detailsToggle.Content=collapsed?"←":"→";ToolTip.SetTip(detailsToggle,collapsed?"展开字体资料":"向右收起字体资料");Avalonia.Automation.AutomationProperties.SetName(detailsToggle,collapsed?"展开字体资料":"收起字体资料");}
  void Wire()
  {
   WireWheelAdjustments();
@@ -87,7 +95,7 @@ public sealed partial class MainWindow:Window
   fontList.SelectionChanged+=(_,_)=>{if(changing)return;var row=fontList.SelectedItems?.OfType<FontRow>().LastOrDefault();if(row!=null)SelectRow(row);};
   fontList.DoubleTapped+=(_,_)=>AddSelectedCompare();faceBox.SelectionChanged+=(_,_)=>{if(!changing&&faceBox.SelectedItem is FontRecord f)SelectFont(f);};
   manual.TextChanged+=(_,_)=>{if(!changing)State.ManualText=manual.Text??"";};
-  favoriteFilter.Click+=(_,_)=>{onlyFavorites=!onlyFavorites;favoriteFilter.Content=onlyFavorites?"★ 正在看收藏 · 显示全部":"★ 我的收藏";RefreshRows();};
+  favoriteFilter.Click+=(_,_)=>{onlyFavorites=!onlyFavorites;favoriteFilter.Content=onlyFavorites?"★ 正在看收藏 · 退出收藏":"★ 我的收藏";favoriteNotice.Text="仅看收藏中的筛选结果\n退出收藏，查看全部匹配字体";favoriteNotice.IsVisible=onlyFavorites;RefreshRows();};
   favoriteButton.Click+=(_,_)=>{if(State.Selected is {} f){SavePending();Store.SetFavorite(new[]{f.Family},!f.IsFavorite);RefreshRows(f.Id);}};
   scanButton.Click+=async(_,_)=>{try{await ScanFonts();}catch(Exception ex){await Dialogs.Message(this,"扫描失败",ex.Message);}};
   pauseButton.Click+=(_,_)=>{scanner.TogglePause();pauseButton.Content=scanner.IsPaused?"继续":"暂停";};cancelButton.Click+=(_,_)=>{scanCancellation?.Cancel();scanner.Resume();};
@@ -122,6 +130,7 @@ public sealed partial class MainWindow:Window
  }
  public void RenderPreviews()
  {
+  RenderPageTypesetting();
   previewPanel.Children.Clear();comparePanel.Children.Clear();comparisonChips.Children.Clear();var text=CurrentText();
   if(State.Selected is {} font)previewPanel.Children.Add(PreviewCard(font,text));else previewPanel.Children.Add(Ui.Card(Ui.Text("点击“更新字体库”，扫描本机字体后开始试排。",17)));
   if(!sampleDraftDirty){sampleSeed=text;sampleEditor.Text=text;}previewPanel.Children.Add(sampleExpander);
@@ -137,7 +146,7 @@ public sealed partial class MainWindow:Window
  }
  Control PreviewCard(FontRecord font,string text,bool removable=false)
  {
-  var stack=Ui.Stack();var header=Ui.Grid("*,Auto");Ui.Put(header,Ui.Heading(font.Label,16));if(removable)Ui.Put(header,Ui.Button("移除",()=>{State.RemoveCompare(font.Id);RenderPreviews();}),1);stack.Children.Add(header);
+  var stack=Ui.Stack();var header=Ui.Grid("*,Auto");Ui.Put(header,CopyableName(font.Label,16,font.Family));if(removable)Ui.Put(header,Ui.Button("移除",()=>{State.RemoveCompare(font.Id);RenderPreviews();}),1);stack.Children.Add(header);
   try{var preview=new GlyphPreview{Glyph=FontScanner.Resolve(font),Text=text,Size=Settings.Size,LineSpacing=Settings.LineHeight};stack.Children.Add(preview);if(preview.Missing.Length>0)stack.Children.Add(Ui.Text("缺字（方框显示）："+preview.Missing,11,Brushes.IndianRed));}
   catch(Exception ex){stack.Children.Add(Ui.Text(ex.Message,12,Brushes.IndianRed));}
   return Ui.Card(stack,24);
