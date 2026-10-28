@@ -85,3 +85,11 @@ H/S/B 改为圆角色条：彩虹色相、当前色相的饱和度梯度、黑�
 
 ## 0.2.10 · 2026-10-28
 Layout-only adjustment: both publishes succeeded without warnings/errors; extracted and installed Mac strict signature verification passed. Inspected installed UI screenshot: three larger modes immediately right of heading, left aligned; reveal action remains far right. No behavioral changes; full regression not repeated.
+
+
+## 0.2.11 · 2026-10-28
+- Core61/61, Desktop build0 warnings/errors. Final extracted signed Mac package full native verification exits0 (4278 font styles).
+- Independent owned page window uses separate visual clones, defaults to hidden type-area guides, supports fixed actual-size scrolling and fit-to-window. Screen dimensions estimate physical scale; cumulative ruler calibration is persisted per display. Guide removal preserves text origin.
+- Verified live page updates, actual page width/scale, guide default and screen measurement; inspected full-page and actual-size screenshots. Installed app UI confirms independent preview and guide off.
+- Unified stack/row spacing, workspace header clearance, page columns and field spacing; narrow header action wraps.
+- User data backed up before installing0.2.11. Mac signature verified. Windows package cross-built, runtime not exercised here. InDesign integration deferred at user request; temporary test scripts removed from Adobe Scripts panels.

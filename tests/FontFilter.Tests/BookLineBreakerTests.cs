@@ -5,6 +5,9 @@ public static class BookLineBreakerTests
 {
  public static void Run(Action<string,Action> test,Action<bool,string> check)
  {
+  test("physical preview accounts for pixel density and OS scaling",()=>{var ratio=PhysicalPageScale.FromDisplay(5120,2,598);var pageDip=185*PhysicalPageScale.DipPerMillimeter*ratio;check(Math.Abs(pageDip/(2560.0/598)-185)<.00001,"physical185mm changed by OS scaling");});
+  test("ruler calibration corrects measured screen length",()=>{check(Math.Abs(PhysicalPageScale.Correct(1,80)-1.25)<.0001,"short ruler must enlarge page");check(Math.Abs(PhysicalPageScale.Correct(1.25,125)-1)<.0001,"long ruler correction wrong");});
+  test("physical preview rejects invalid screen measurements",()=>{try{PhysicalPageScale.FromDisplay(5120,0,598);throw new Exception("invalid scaling accepted");}catch(ArgumentOutOfRangeException){} });
   double Measure(string s)=>s.EnumerateRunes().Count();
   test("book Chinese lines honor closing and opening punctuation",()=>{
    var lines=BookLineBreaker.Lines("甲乙（丙丁）戊己，庚辛。壬癸《书页之间》：安静阅读！",8,1,Measure,30);

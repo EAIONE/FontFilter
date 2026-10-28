@@ -15,6 +15,7 @@ public sealed partial class MainWindow
  readonly ComboBox paperPreset=new(){HorizontalAlignment=HorizontalAlignment.Stretch};
  readonly ComboBox bookFace=new(){HorizontalAlignment=HorizontalAlignment.Stretch};
  readonly ComboBox bookSample=new(){HorizontalAlignment=HorizontalAlignment.Stretch};
+ BookPageDocument? pageDocument;BookPagePreviewWindow? pageWindow;
  bool updatingBook;FontRecord? bookCandidate;
  static readonly (string Name,int Width,int Height)[] PaperPresets={
   ("大16开 · 210 × 285",210,285),("大32开 · 140 × 203",140,203),
@@ -33,18 +34,20 @@ public sealed partial class MainWindow
   paperPreset.SelectionChanged+=(_,_)=>{if(updatingBook||!ready||paperPreset.SelectedIndex<0||paperPreset.SelectedIndex>=PaperPresets.Length)return;var p=PaperPresets[paperPreset.SelectedIndex];updatingBook=true;paperWidth.Value=p.Width;paperHeight.Value=p.Height;updatingBook=false;PaperChanged();};
   paperWidth.ValueChanged+=(_,_)=>PaperChanged();paperHeight.ValueChanged+=(_,_)=>PaperChanged();
   var controls=new WrapPanel{Orientation=Orientation.Horizontal};
-  foreach(var pair in new[]{("天头 mm",pageTop),("地脚 mm",pageBottom),("订口 mm",pageInner),("切口 mm",pageOuter),("字号 pt",pageSize),("行距 倍",pageLeading),("字距 pt",pageTracking)}){var field=Ui.Stack(Ui.Text(pair.Item1,10),pair.Item2);field.Spacing=3;field.Margin=new Thickness(0,0,8,8);controls.Children.Add(field);pair.Item2.ValueChanged+=(_,_)=>{if(ready){Settings.PageLayout=inputs.Select(v=>(double)(v.Value??0)).ToArray();SaveSettings();RenderPageTypesetting();}};}
-  pageCandidates.ItemTemplate=new FuncDataTemplate<FontRow>((row,_)=>{var content=Ui.Stack(CopyableName(row?.Title??"",13),Ui.Text(row?.Subtitle??"",10));content.Spacing=3;try{if(row?.Fonts.FirstOrDefault() is {} font)content.Children.Add(new GlyphPreview{Glyph=FontScanner.Resolve(font),Text="山川有风骨，文字见精神。",Size=16,LineSpacing=1.3});}catch{}return content;});
+  foreach(var pair in new[]{("天头 mm",pageTop),("地脚 mm",pageBottom),("订口 mm",pageInner),("切口 mm",pageOuter),("字号 pt",pageSize),("行距 倍",pageLeading),("字距 pt",pageTracking)}){var field=Ui.Stack(Ui.Text(pair.Item1,10),pair.Item2);field.Spacing=6;field.Margin=new Thickness(0,0,12,12);controls.Children.Add(field);pair.Item2.ValueChanged+=(_,_)=>{if(ready){Settings.PageLayout=inputs.Select(v=>(double)(v.Value??0)).ToArray();SaveSettings();RenderPageTypesetting();}};}
+  pageCandidates.ItemTemplate=new FuncDataTemplate<FontRow>((row,_)=>{var content=Ui.Stack(CopyableName(row?.Title??"",13),Ui.Text(row?.Subtitle??"",10));content.Spacing=6;try{if(row?.Fonts.FirstOrDefault() is {} font)content.Children.Add(new GlyphPreview{Glyph=FontScanner.Resolve(font),Text="山川有风骨，文字见精神。",Size=16,LineSpacing=1.3});}catch{}return content;});
   pageCandidates.SelectionChanged+=(_,_)=>{if(!updatingBook&&pageCandidates.SelectedItem is FontRow row){bookCandidate=row.Fonts[0];RenderPageTypesetting();}};
   bookFace.ItemTemplate=new FuncDataTemplate<FontRecord>((f,_)=>Ui.Text(f?.Face??"",12));bookFace.SelectionChanged+=(_,_)=>{if(ready&&!updatingBook&&bookFace.SelectedItem is FontRecord font){if(bookCandidate!=null){bookCandidate=font;RenderPageTypesetting();}else{changing=true;faceBox.SelectedItem=font;changing=false;SelectFont(font);}}};
   bookSample.SelectionChanged+=(_,_)=>{if(ready&&!updatingBook&&bookSample.SelectedItem is string mode){Settings.PageSampleMode=mode;SaveSettings();RenderPageTypesetting();}};
   var paperFields=Ui.Row(Ui.Stack(Ui.Text("宽 mm",10),paperWidth),Ui.Stack(Ui.Text("高 mm",10),paperHeight));
-  var settings=Ui.Stack(Ui.Text("当前字体字重",10),bookFace,Ui.Heading("页面尺寸",13),paperPreset,paperFields,Ui.Heading("版心与文字",13),controls,Ui.Text("固定 1 P · 段首缩进两字 · 多余文字溢出裁切。",10),Ui.Text("试排样文",10),bookSample,Ui.AsyncButton("编辑样文",EditBookSample));settings.Spacing=6;
+  var settings=Ui.Stack(Ui.Text("当前字体字重",10),bookFace,Ui.Heading("页面尺寸",13),paperPreset,paperFields,Ui.Heading("版心与文字",13),controls,Ui.Text("固定 1 P · 段首缩进两字 · 多余文字溢出裁切。",10),Ui.Text("试排样文",10),bookSample,Ui.AsyncButton("编辑样文",EditBookSample));settings.Spacing=12;
   var candidates=Ui.Grid("*","Auto,*");candidates.Name="BookCandidatesColumn";Ui.Put(candidates,Ui.Heading("字体候选",14));Ui.Put(candidates,pageCandidates,0,1);
   var settingsColumn=Ui.Grid("*","Auto,*");settingsColumn.Name="BookSettingsColumn";Ui.Put(settingsColumn,Ui.Heading("排版设置",14));Ui.Put(settingsColumn,new ScrollViewer{Content=settings,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},0,1);
-  var preview=Ui.Grid("*","*,Auto");pageFit.Child=bookPages;pageFit.Name="BookPageFit";Ui.Put(preview,pageFit);pageCaption.HorizontalAlignment=HorizontalAlignment.Center;pageCaption.VerticalAlignment=VerticalAlignment.Center;pageCaption.Margin=new Thickness(8,0);Ui.Put(preview,pageCaption,0,1);
-  var layout=Ui.Grid("190,12,*,12,300");Ui.Put(layout,candidates);Ui.Put(layout,preview,2);Ui.Put(layout,settingsColumn,4);return layout;
+  var preview=Ui.Grid("*","*,Auto");pageFit.Child=bookPages;pageFit.Name="BookPageFit";Ui.Put(preview,pageFit);pageCaption.HorizontalAlignment=HorizontalAlignment.Center;pageCaption.VerticalAlignment=VerticalAlignment.Center;pageCaption.Margin=new Thickness(8,0);var previewFooter=Ui.Row(pageCaption,Ui.Button("独立预览 ↗",OpenPagePreview));previewFooter.HorizontalAlignment=HorizontalAlignment.Center;Ui.Put(preview,previewFooter,0,1);
+  var layout=Ui.Grid("190,20,*,20,300");Ui.Put(layout,candidates);Ui.Put(layout,preview,2);Ui.Put(layout,settingsColumn,4);return layout;
  }
+ void OpenPagePreview(){if(pageDocument==null)return;if(pageWindow!=null){if(pageWindow.WindowState==WindowState.Minimized)pageWindow.WindowState=WindowState.Normal;pageWindow.Activate();return;}pageWindow=new BookPagePreviewWindow(this,pageDocument,Settings,SaveSettings);pageWindow.Closed+=(_,_)=>pageWindow=null;pageWindow.Show(this);}
+
  void SyncPaperPreset(){updatingBook=true;var index=Array.FindIndex(PaperPresets,p=>Math.Abs(p.Width-(double)(paperWidth.Value??185))<.01&&Math.Abs(p.Height-(double)(paperHeight.Value??260))<.01);paperPreset.SelectedIndex=index<0?PaperPresets.Length:index;updatingBook=false;}
  void PaperChanged(){if(!ready||updatingBook)return;Settings.PageWidth=(double)(paperWidth.Value??185);Settings.PageHeight=(double)(paperHeight.Value??260);SyncPaperPreset();SaveSettings();RenderPageTypesetting();}
  async Task EditBookSample(){var editor=Ui.Input(CurrentBookText(),null,true);editor.MaxLength=4000;editor.Height=280;var layout=Ui.Stack(Ui.Heading("页面试排样文",18),editor);var window=Ui.Window("编辑样文",layout,600,430);layout.Margin=new Thickness(20);layout.Children.Add(Ui.Button("应用样文",()=>{Settings.PageSampleText=editor.Text??"";Settings.PageSampleMode=FontSamples.FreeKey;SaveSettings();RenderPageTypesetting();window.Close();},"primary"));await window.ShowDialog(this);}
@@ -58,7 +61,7 @@ public sealed partial class MainWindow
   if(State.Comparison.Count>0)bookCandidate??=State.Comparison.FirstOrDefault(f=>f.Id==State.Selected?.Id)??State.Comparison[0];
   var candidateRows=State.Comparison.Select(f=>new FontRow(f.Family,f.Face,f.Tags,new(){f})).ToList();pageCandidates.ItemsSource=candidateRows;pageCandidates.SelectedItem=candidateRows.FirstOrDefault(r=>r.Fonts[0].Id==bookCandidate?.Id);
   var font=bookCandidate??State.Selected;bookFace.ItemsSource=bookCandidate!=null?new[]{bookCandidate}:matches.Where(f=>f.Family==font?.Family).ToArray();bookFace.SelectedItem=font;bookSample.ItemsSource=new[]{BookSamples.DefaultKey,BookSamples.TraditionalKey,BookSamples.EnglishKey,BookSamples.MixedKey,FontSamples.FreeKey}.Concat(Settings.Samples.Keys).Distinct().ToArray();bookSample.SelectedItem=Settings.PageSampleMode;updatingBook=false;
-  bookPages.Children.Clear();if(font==null){pageCaption.Text="请选择字体";return;}
+  pageDocument=null;pageWindow?.SetPage(null);bookPages.Children.Clear();if(font==null){pageCaption.Text="请选择字体";return;}
   try{
    var glyph=FontScanner.Resolve(font);const double mm=96/25.4,pt=96/72.0;var top=(double)(pageTop.Value??20)*mm;var bottom=(double)(pageBottom.Value??20)*mm;var inner=(double)(pageInner.Value??22)*mm;var outer=(double)(pageOuter.Value??18)*mm;var width=(double)(paperWidth.Value??185)*mm;var height=(double)(paperHeight.Value??260)*mm;var textWidth=width-inner-outer;var textHeight=height-top-bottom;var size=(double)(pageSize.Value??12)*pt;var leading=(double)(pageLeading.Value??1.6m);var tracking=(double)(pageTracking.Value??0)*pt;
    if(textWidth<3*size+2*Math.Max(0,tracking)||textHeight<size*leading){pageCaption.Text="边距过大，请缩小边距";bookPages.Children.Add(Ui.Text("请为版心留出至少一行文字的空间。",13));return;}
@@ -69,10 +72,8 @@ public sealed partial class MainWindow
    pageCaption.Text=$"1 P · {paperWidth.Value:0.#} × {paperHeight.Value:0.#} mm";
    {
     var left=inner;var right=outer;
-    var preview=new GlyphPreview{Glyph=glyph,Text=string.Join("\n",lines.Take(perPage)),Size=size,LineSpacing=leading,Tracking=tracking,Width=textWidth,PreformattedLines=true};
-    var block=new Border{BorderBrush=new SolidColorBrush(Color.Parse("#CBD8D2")),BorderThickness=new Thickness(1),Child=preview,Width=textWidth+2,Height=textHeight+2,ClipToBounds=true,Margin=new Thickness(left,top,right,bottom),VerticalAlignment=VerticalAlignment.Top};
-    var sheet=new Grid{Width=width,Height=height,Background=Brushes.White,ClipToBounds=true};sheet.Children.Add(block);sheet.Children.Add(new TextBlock{Text="1",FontSize=10,Foreground=Brushes.Gray,HorizontalAlignment=HorizontalAlignment.Center,VerticalAlignment=VerticalAlignment.Bottom,Margin=new Thickness(0,0,0,12)});
-    bookPages.Children.Add(new Border{Child=sheet,BorderBrush=new SolidColorBrush(Color.Parse("#DCE5DD")),BorderThickness=new Thickness(1),BoxShadow=new BoxShadows(new BoxShadow{Blur=10,OffsetY=3,Color=Color.Parse("#18000000")})});
+    pageDocument=new BookPageDocument(glyph,string.Join("\n",lines.Take(perPage)),width,height,textWidth,textHeight,left,top,right,bottom,size,leading,tracking);
+    var sheet=pageDocument.CreateSheet(true);var paper=new Border{Child=sheet,BorderBrush=new SolidColorBrush(Color.Parse("#DCE5DD")),BorderThickness=new Thickness(1),BoxShadow=new BoxShadows(new BoxShadow{Blur=10,OffsetY=3,Color=Color.Parse("#18000000")}),Cursor=new Cursor(StandardCursorType.Hand)};ToolTip.SetTip(paper,"点击打开独立等大预览");paper.Tapped+=(_,_)=>OpenPagePreview();bookPages.Children.Add(paper);pageWindow?.SetPage(pageDocument);
    }
   }catch(Exception ex){bookPages.Children.Add(Ui.Text("页面试排未能显示："+ex.Message,12));}
  }

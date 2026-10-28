@@ -28,7 +28,7 @@ public sealed partial class MainWindow:Window
  readonly ComboBox sampleBox=new(){MinWidth=130};
  readonly NumericUpDown sizeInput=new(){Minimum=12,Maximum=120,Increment=1,Width=120,FormatString="0"};
  readonly NumericUpDown lineInput=new(){Minimum=1,Maximum=3,Increment=.1m,Width=120,FormatString="0.0"};
- readonly StackPanel previewPanel=new(){Spacing=14},comparePanel=new(){Spacing=14};
+ readonly StackPanel previewPanel=new(){Spacing=16},comparePanel=new(){Spacing=16};
  readonly WrapPanel comparisonChips=new();readonly TabControl tabs=new();readonly List<Button> workspaceModeButtons=new();
  readonly TextBox sampleEditor=Ui.Input("",null,true),sampleName=Ui.Input("","保存为样文名称");
  readonly Expander sampleExpander=new(){Header="编辑试排文字",IsExpanded=false};
@@ -59,7 +59,7 @@ public sealed partial class MainWindow:Window
   query.Margin=new Thickness(20,0,24,0);query.VerticalAlignment=VerticalAlignment.Center;Ui.Put(header,query,1);
   scanButton.Classes.Add("primary");var actions=Ui.Row(Ui.AsyncButton("主题",()=>Dialogs.Theme(this,Settings,SaveSettings),"header"),Ui.AsyncButton("官网资料",OpenCatalogue,"header"),Ui.AsyncButton("API 设置",()=>Dialogs.ApiSettings(this,Settings,SaveSettings),"header"),scanButton);Ui.Put(header,actions,2);
   var headerBorder=new Border{Child=header};headerBorder.Classes.Add("appHeader");Ui.Put(root,headerBorder);
-  var body=Ui.Grid("265,18,*,18,265");bodyGrid=body;body.Margin=new Thickness(22,18,22,14);
+  var body=Ui.Grid("265,18,*,18,265");bodyGrid=body;body.Margin=new Thickness(24,20,24,16);
   favoriteFilter.HorizontalAlignment=HorizontalAlignment.Stretch;favoriteFilter.Classes.Add("tag");
   filterControls=Ui.Stack(Ui.Text("常用标签",10),new ScrollViewer{Content=quickTags,MaxHeight=110,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},Ui.AsyncButton("按特征挑选字体  →",()=>PickTags(true),"primary"),groupBox);
   favoriteNotice.Foreground=new SolidColorBrush(Color.Parse("#C23E3E"));favoriteNotice.IsVisible=false;var leftTop=Ui.Stack(Ui.Heading("本地字体"),favoriteFilter,favoriteNotice,filterControls,counts);
@@ -69,17 +69,17 @@ public sealed partial class MainWindow:Window
   leftTop.PointerEntered+=(_,_)=>{if(filterControls!=null)filterControls.IsVisible=true;};
 
   Ui.Put(body,Ui.Card(left,12));
-  var main=Ui.Grid("*","Auto,Auto,Auto,*");var workspaceHeader=Ui.Grid("Auto,*,Auto");Ui.Put(workspaceHeader,Ui.Heading("试排工作台",22));var reveal=Ui.AsyncButton("打开字体位置 ↗",RevealCurrentFont);reveal.VerticalAlignment=VerticalAlignment.Top;reveal.Margin=new Thickness(0,4,0,0);var modes=Ui.Row();modes.HorizontalAlignment=HorizontalAlignment.Left;modes.Margin=new Thickness(16,0,8,0);foreach(var label in new[]{"字体试排","字体对比","页面试排"}){var index=workspaceModeButtons.Count;var button=Ui.Button(label,()=>tabs.SelectedIndex=index);button.FontSize=15;button.Padding=new Thickness(12,10);button.MinHeight=42;workspaceModeButtons.Add(button);modes.Children.Add(button);}workspaceModeButtons[0].Classes.Add("primary");Ui.Put(workspaceHeader,modes,1);Ui.Put(workspaceHeader,reveal,2);Ui.Put(main,workspaceHeader);
+  var main=Ui.Grid("*","Auto,Auto,Auto,*");var workspaceHeader=Ui.Grid("Auto,*,Auto","Auto,Auto");workspaceHeader.Margin=new Thickness(0,0,0,16);Ui.Put(workspaceHeader,Ui.Heading("试排工作台",22));var reveal=Ui.AsyncButton("打开字体位置 ↗",RevealCurrentFont);reveal.VerticalAlignment=VerticalAlignment.Top;reveal.Margin=new Thickness(0,4,0,0);var modes=Ui.Row();modes.HorizontalAlignment=HorizontalAlignment.Left;modes.Margin=new Thickness(20,0,16,0);foreach(var label in new[]{"字体试排","字体对比","页面试排"}){var index=workspaceModeButtons.Count;var button=Ui.Button(label,()=>tabs.SelectedIndex=index);button.FontSize=15;button.Padding=new Thickness(12,10);button.MinHeight=42;workspaceModeButtons.Add(button);modes.Children.Add(button);}workspaceModeButtons[0].Classes.Add("primary");Ui.Put(workspaceHeader,modes,1);Ui.Put(workspaceHeader,reveal,2);Ui.Put(main,workspaceHeader);workspaceHeader.SizeChanged+=(_,_)=>{var narrow=workspaceHeader.Bounds.Width<620;workspaceHeader.ColumnDefinitions[2].Width=narrow?new GridLength(0):GridLength.Auto;Grid.SetColumn(reveal,narrow?0:2);Grid.SetColumnSpan(reveal,narrow?3:1);Grid.SetRow(reveal,narrow?1:0);reveal.HorizontalAlignment=HorizontalAlignment.Right;reveal.Margin=new Thickness(0,narrow?12:4,0,0);};
   var selected=Ui.Stack(Ui.Text("当前字体",10),title,faceBox,favoriteButton);selectedCard=Ui.Card(selected);Ui.Put(main,selectedCard,0,1);
   title.Tapped+=async(_,_)=>{if(State.Selected is {} f)await CopyFontName(f.Family);};ToolTip.SetTip(title,"点击复制字体名称");title.Cursor=new Cursor(StandardCursorType.Hand);
-  var options=Ui.Row(sampleBox,Ui.Text("字号",11),sizeInput,Ui.Text("行距",11),lineInput);options.Margin=new Thickness(0,12,0,10);Ui.Put(main,options,0,2);
+  var options=Ui.Row(sampleBox,Ui.Text("字号",11),sizeInput,Ui.Text("行距",11),lineInput);options.Margin=new Thickness(0,16,0,16);Ui.Put(main,options,0,2);
   sizeInput.Value=(decimal)Settings.Size;lineInput.Value=(decimal)Settings.LineHeight;
   RefreshSampleModes();
   tabs.Items.Add(new TabItem{Header="字体试排",Content=new ScrollViewer{Content=previewPanel,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled}});
   tabs.Items.Add(new TabItem{Header="字体对比",Content=new ScrollViewer{Content=comparePanel,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled}});
   tabs.Items.Add(new TabItem{Header="页面试排",Content=BuildPageTypesetting()});
-  tabs.SelectionChanged+=(_,_)=>{if(selectedCard!=null)selectedCard.IsVisible=tabs.SelectedIndex==0;options.IsVisible=tabs.SelectedIndex!=2;for(var i=0;i<workspaceModeButtons.Count;i++){if(i==tabs.SelectedIndex)workspaceModeButtons[i].Classes.Add("primary");else workspaceModeButtons[i].Classes.Remove("primary");}ApplyDetailsVisibility();};
-  tabs.Classes.Add("workspaceTabs");tabs.Padding=new Thickness(0);tabs.Margin=new Thickness(0,10,0,0);Ui.Put(main,tabs,0,3);Ui.Put(body,main,2);
+  tabs.SelectionChanged+=(_,_)=>{if(selectedCard!=null)selectedCard.IsVisible=tabs.SelectedIndex==0;options.IsVisible=tabs.SelectedIndex!=2;options.Margin=new Thickness(0,tabs.SelectedIndex==0?16:0,0,16);for(var i=0;i<workspaceModeButtons.Count;i++){if(i==tabs.SelectedIndex)workspaceModeButtons[i].Classes.Add("primary");else workspaceModeButtons[i].Classes.Remove("primary");}ApplyDetailsVisibility();};
+  tabs.Classes.Add("workspaceTabs");tabs.Padding=new Thickness(0);tabs.Margin=new Thickness(0);Ui.Put(main,tabs,0,3);Ui.Put(body,main,2);
   manual.MaxLength=4000;manual.Height=100;
   var right=Ui.Stack(details,Ui.Heading("人工标签",14),manual,Ui.Button("应用到左侧所选结果",ApplyManual,"primary"),Ui.AsyncButton("从标签库添加",()=>PickTags(false)),Ui.Text("切换字体时自动保存当前字重的编辑。",10,Brushes.SlateGray),Ui.Heading("介绍与来源",14),summary,Ui.AsyncButton("补充官网介绍",EditMetadata),Ui.AsyncButton("查找官方页面",FindOfficial),Ui.AsyncButton("分析当前字体",AnalyzeCurrent),Ui.Heading("工具",14),Ui.AsyncButton("导入旧版 Data",ImportLegacy),Ui.AsyncButton("打开数据文件夹",()=>OpenFolder(FontFilter.App.DataDirectory)),Ui.Text("数据保存在本机；字体文件不会被复制。",10,Brushes.SlateGray));
   detailsBody=new ScrollViewer{Content=right,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled};detailsHeading=Ui.Heading("字体资料",18);detailsToggle=Ui.Button("→",ToggleDetails);detailsToggle.Name="ToggleDetails";detailsToggle.Padding=new Thickness(4);var infoHeader=Ui.Grid("*,Auto");Ui.Put(infoHeader,detailsHeading);Ui.Put(infoHeader,detailsToggle,1);var infoLayout=Ui.Grid("*","Auto,*");Ui.Put(infoLayout,infoHeader);Ui.Put(infoLayout,detailsBody,0,1);detailsCard=Ui.Card(infoLayout);detailsCard.Name="DetailsCard";Ui.Put(body,detailsCard,4);ApplyDetailsVisibility();Ui.Put(root,body,0,1);
