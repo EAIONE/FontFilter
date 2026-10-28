@@ -42,3 +42,5 @@ Verification: old live-preview test RED -> GREEN; old-track-overlay test RED -> 
 2026-10-28: 0.2.6 applies red favorites notice and vertical details tab, aligns header controls, changes tag selections to unions, redesigns page typesetting as candidates/settings beside a fitted full page with navigation. Adds twelve paper presets and persisted custom dimensions (default185×260). Core52 tests and final real Mac package verification pass. Both platform packages updated.
 
 2026-10-28: 0.2.7 responds to request for fully populated paragraph book pages. Adds original long-form indented book specimen, independent page sample/edit mode and pagination; core53 and final native UI verification pass; both packages updated.
+
+2026-10-28: 0.2.8 fixes asynchronous query events reverting label union; implements single1P filled book specimen and fixed two-character paragraph indent, candidate source restricted to comparison, numeric/row alignment. Final native verification and core53 pass; Mac installed and both packages updated.

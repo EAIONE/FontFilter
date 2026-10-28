@@ -35,7 +35,7 @@ public sealed partial class MainWindow:Window
  string sampleSeed="";bool sampleDraftDirty;
  bool ready,changing,onlyFavorites,closingAllowed,closePending;OfficialCatalogue? catalogue;
  List<FontRecord> matches=new();
- bool tagSearchMode,settingTagQuery;
+ bool tagSearchMode;string? tagQueryText;
  Control? filterControls;Border? selectedCard;readonly TextBlock favoriteNotice=Ui.Text("",10);
  Grid? bodyGrid;Border? detailsCard;Control? detailsBody;TextBlock? detailsHeading;Button? detailsToggle;
  public MainWindow()
@@ -92,7 +92,7 @@ public sealed partial class MainWindow:Window
  void Wire()
  {
   WireWheelAdjustments();
-  query.TextChanged+=(_,_)=>{if(!settingTagQuery)tagSearchMode=false;if(ready)RefreshRows();};groupBox.IsCheckedChanged+=(_,_)=>{if(ready)RefreshRows();};
+  query.TextChanged+=(_,_)=>{tagSearchMode=tagQueryText!=null&&query.Text==tagQueryText;if(ready)RefreshRows();};groupBox.IsCheckedChanged+=(_,_)=>{if(ready)RefreshRows();};
   fontList.SelectionChanged+=(_,_)=>{if(changing)return;var row=fontList.SelectedItems?.OfType<FontRow>().LastOrDefault();if(row!=null)SelectRow(row);};
   fontList.DoubleTapped+=(_,_)=>AddSelectedCompare();faceBox.SelectionChanged+=(_,_)=>{if(!changing&&faceBox.SelectedItem is FontRecord f)SelectFont(f);};
   manual.TextChanged+=(_,_)=>{if(!changing)State.ManualText=manual.Text??"";};
@@ -118,7 +118,7 @@ public sealed partial class MainWindow:Window
  }
  void SelectRow(FontRow row,string? keep=null){SavePending();changing=true;faceBox.ItemTemplate=new FuncDataTemplate<FontRecord>((f,_)=>Ui.Text(f?.Face??""));faceBox.ItemsSource=row.Fonts;var face=row.Fonts.FirstOrDefault(f=>f.Id==keep)??row.Fonts[0];faceBox.SelectedItem=face;changing=false;SelectFont(face);}
  void SelectFont(FontRecord font){SavePending();changing=true;State.Select(font);manual.Text=font.ManualTags;title.Text=font.Family;details.Text=$"{font.Face}\n{(font.SupportsChinese==true?"含常用汉字":"汉字覆盖有限")}  {font.Vendor}";summary.Text=(font.Summary.Length==0?"暂无介绍，可补充官网资料。":font.Summary)+(font.Url.Length>0?"\n来源："+font.Url:"");favoriteButton.Content=font.IsFavorite?"★ 已收藏 · 点击取消":"☆ 收藏当前家族";changing=false;RenderPreviews();}
- void ApplyTagSearch(IEnumerable<string> tags){settingTagQuery=true;tagSearchMode=true;query.Text=string.Join(" ",tags.Distinct(StringComparer.OrdinalIgnoreCase));settingTagQuery=false;if(ready)RefreshRows();}
+ void ApplyTagSearch(IEnumerable<string> tags){tagQueryText=string.Join(" ",tags.Distinct(StringComparer.OrdinalIgnoreCase));tagSearchMode=true;query.Text=tagQueryText;if(ready)RefreshRows();}
  void RenderQuickTags(){quickTags.Children.Clear();foreach(var tag in Settings.FrequentTags().Concat(new[]{"宋体","黑体","楷书","隶书","古籍","清雅"}).Distinct().Take(12)){var b=Ui.Button(tag,()=>ApplyTagSearch(TagRules.Terms(query.Text??"").Concat(new[]{tag})),"tag");b.Margin=new Thickness(0,0,5,5);quickTags.Children.Add(b);}}
  void ApplyManual(){var rows=fontList.SelectedItems?.OfType<FontRow>().ToList()??new();var ids=rows.SelectMany(r=>r.Fonts).Select(f=>f.Id).Distinct().ToArray();if(ids.Length==0)return;Store.SetManual(ids,manual.Text??"");if(State.Selected!=null)State.Selected.ManualTags=manual.Text?.Trim()??"";Settings.RecordTags(TagRules.Terms(manual.Text??""));SaveSettings();status.Text=$"已保存 {ids.Length} 个字重的人工标签";RefreshRows();}
  IEnumerable<FontRecord> SelectedFonts()=>fontList.SelectedItems?.OfType<FontRow>().Select(r=>State.Selected!=null&&r.Fonts.Any(f=>f.Id==State.Selected.Id)?State.Selected:r.Fonts[0])??Enumerable.Empty<FontRecord>();

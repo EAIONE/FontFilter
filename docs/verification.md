@@ -68,3 +68,10 @@ H/S/B 改为圆角色条：彩虹色相、当前色相的饱和度梯度、黑�
 - Core53/53 and Desktop build0 warnings/errors. Book sample is3500–4000 characters with over20 indented paragraphs.
 - Final extracted Mac full UI verification exits0: default page contains more than500 characters, automatic pagination produces multiple pages, preset and small-window fitting checks remain passing. Screenshot confirms full paragraphs through the bottom of the type area.
 - Mac installed after full user data backup. Windows package cross-built; Windows runtime not exercised here.
+
+## 0.2.8 · 2026-10-28
+- Core53/53, Desktop build0 warnings/errors, both platform publishes succeeded; final extracted Mac full UI verification exits0.
+- Real deferred TextChanged regression: after selecting黑体＋宋体 and waiting, result IDs exactly equal union of separate searches. Picker retains active selections.
+- Numeric template editor checks both horizontal and vertical centering; screenshots inspect input and row label placement.
+- Page candidate count equals comparison count; selecting comparison candidate selects its exact style; clearing comparison leaves zero candidates. Fixed one sheet, sufficient generated overflow, all paragraph starts normalize to two fixed em spaces.
+- Page default185×260 and small-window fitting remain passing. User data backed up before installation. Windows runtime not exercised on this Mac.

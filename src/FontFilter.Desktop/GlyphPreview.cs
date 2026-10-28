@@ -21,6 +21,7 @@ public sealed class GlyphPreview:Control
   float x=0,y=(float)Size,step=(float)(Size*LineSpacing);var list=new List<PlacedGlyph>();
   foreach(var rune in Text.Replace("\r","").EnumerateRunes()){
    if(rune.Value=='\n'){x=0;y+=step;continue;}
+   if(rune.Value==0x3000){x+=(float)(Size+Tracking);continue;}
    var text=rune.Value=='\t'?"    ":rune.ToString();var index=Glyph.GetGlyph(rune.Value);var advance=index==0?(float)Size:Math.Max((float)Size*.08f,paint.MeasureText(text));
    if(x+advance>width&&x>0){x=0;y+=step;}
    list.Add(new(text,x,y,index==0));x+=Math.Max(1,advance+(float)Tracking);

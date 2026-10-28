@@ -9,7 +9,7 @@ public sealed partial class MainWindow
 {
  async Task PickTags(bool search)
  {
-  var filter=Ui.Input("","搜索标签名称、维度或说明");filter.Name="TagSearch";filter.Margin=new Thickness(0,16,0,20);filter.MinHeight=40;var chosen=new HashSet<string>();
+  var filter=Ui.Input("","搜索标签名称、维度或说明");filter.Name="TagSearch";filter.Margin=new Thickness(0,16,0,20);filter.MinHeight=40;var chosen=new HashSet<string>(search&&tagSearchMode?TagRules.Terms(tagQueryText??""):Array.Empty<string>());
   var panel=new StackPanel{Spacing=12};var count=Ui.Text("未选择标签",12);var apply=new Button{Content=search?"用所选标签筛选":"添加到人工标签"};apply.Name="ApplyTags";apply.Classes.Add("primary");
   var footer=Ui.Grid("*,Auto");footer.Margin=new Thickness(0,18,0,0);count.VerticalAlignment=VerticalAlignment.Center;Ui.Put(footer,count);Ui.Put(footer,apply,1);
   var grid=Ui.Grid("*","Auto,Auto,*,Auto");grid.Margin=new Thickness(24);Ui.Put(grid,Ui.Stack(Ui.Heading("按特征挑选字体"),Ui.Text("所选标签相加，匹配任一标签即显示；勾选后应用。",12)));Ui.Put(grid,filter,0,1);Ui.Put(grid,new ScrollViewer{Content=panel,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},0,2);Ui.Put(grid,footer,0,3);var w=Ui.Window("分类标签库",grid,850,720);
