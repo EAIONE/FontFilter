@@ -99,3 +99,7 @@ Preview controls moved to a260-DIP right sidebar with independent scrolling. Bui
 
 ## 0.2.13 · 2026-10-28
 Core61/61 including50mm calibration reference test. Both publishes pass; installed Mac signature verified. Native expanded calibration screenshot confirms complete0/25/50mm ruler and no horizontal scrollbar. Ruler dynamically shortens at larger physical scales, correction uses displayed reference length. User data backed up.
+
+## 0.2.14 · 2026-10-28
+Comparison-only padding changed24→8 vertically, stack gap12→6; horizontal padding, glyph size and leading retained. Default two-line card height approximately75% of previous. Both platform publishes and installed Mac strict signature pass; data backed up.
+Final native UI verification exits0; comparison screenshot inspected with larger33pt sample and wrapping preserved.

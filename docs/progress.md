@@ -54,3 +54,5 @@ Verification: old live-preview test RED -> GREEN; old-track-overlay test RED -> 
 2026-10-28: 0.2.12 moves independent preview controls into a right sidebar, preserving full window height for the sheet. Both packages updated; Mac installed with data backup.
 
 2026-10-28: 0.2.13 fixes clipped calibration ruler: use50mm maximum reference, shorten dynamically to190DIP, remove horizontal scrolling, synchronize measured default and calibration formula. Native UI inspected, both packages updated.
+
+2026-10-28: 0.2.14 compacts comparison rows to approximately three quarters by reducing vertical whitespace. Both packages updated; Mac installed after backup.

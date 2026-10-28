@@ -151,7 +151,7 @@ public sealed partial class MainWindow:Window
   var stack=Ui.Stack();var header=Ui.Grid("*,Auto");Ui.Put(header,CopyableName(font.Label,16,font.Family));if(removable)Ui.Put(header,Ui.Button("移除",()=>{State.RemoveCompare(font.Id);RenderPreviews();}),1);stack.Children.Add(header);
   try{var preview=new GlyphPreview{Glyph=FontScanner.Resolve(font),Text=text,Size=Settings.Size,LineSpacing=Settings.LineHeight};stack.Children.Add(preview);if(preview.Missing.Length>0)stack.Children.Add(Ui.Text("缺字（方框显示）："+preview.Missing,11,Brushes.IndianRed));}
   catch(Exception ex){stack.Children.Add(Ui.Text(ex.Message,12,Brushes.IndianRed));}
-  return Ui.Card(stack,24);
+  var card=Ui.Card(stack,24);if(removable){stack.Spacing=6;card.Padding=new Thickness(24,8);}return card;
  }
  public Task<ScanResult> ScanFonts(){if(scanTask is {IsCompleted:false})return scanTask;scanTask=RunScanFonts();return scanTask;}
  async Task<ScanResult> RunScanFonts()
