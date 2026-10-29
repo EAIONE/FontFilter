@@ -1,0 +1,60 @@
+<Application xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="FontFilter.Desktop.DesktopApp" RequestedThemeVariant="Light">
+ <Application.Styles>
+  <FluentTheme />
+  <Style Selector="Window"><Setter Property="FontSize" Value="13"/><Setter Property="Foreground" Value="{DynamicResource CanvasTextBrush}"/><Setter Property="Background" Value="{DynamicResource CanvasBrush}"/></Style>
+  <Style Selector="Border.card"><Setter Property="TextElement.Foreground" Value="#203C36"/></Style>
+  <Style Selector="Button"><Setter Property="CornerRadius" Value="7"/><Setter Property="Padding" Value="12,8"/><Setter Property="MinHeight" Value="34"/><Setter Property="Cursor" Value="Hand"/></Style>
+  <Style Selector="Button.primary"><Setter Property="Background" Value="{DynamicResource AccentBrush}"/><Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/></Style>
+  <Style Selector="Button.header"><Setter Property="Background" Value="{DynamicResource HeaderButtonBrush}"/><Setter Property="Foreground" Value="{DynamicResource HeaderButtonTextBrush}"/><Setter Property="BorderThickness" Value="0"/></Style>
+  <Style Selector="Border.appHeader"><Setter Property="Background" Value="{DynamicResource HeaderBrush}"/></Style>
+  <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter"><Setter Property="Background" Value="{DynamicResource SoftBrush}"/></Style>
+  <Style Selector="Button.tag"><Setter Property="Padding" Value="9,5"/><Setter Property="MinHeight" Value="27"/><Setter Property="FontSize" Value="11"/><Setter Property="Background" Value="{DynamicResource SoftBrush}"/><Setter Property="Foreground" Value="{DynamicResource SoftTextBrush}"/></Style>
+  <Style Selector="TextBlock.brand"><Setter Property="Foreground" Value="{DynamicResource HeaderTextBrush}"/></Style>
+  <Style Selector="TextBlock.muted"><Setter Property="Foreground" Value="#63756D"/></Style>
+  <Style Selector="TextBlock.fontTags"><Setter Property="Foreground" Value="{DynamicResource InkBrush}"/></Style>
+  <Style Selector="ListBoxItem:selected TextBlock"><Setter Property="Foreground" Value="{DynamicResource SoftTextBrush}"/></Style>
+  <Style Selector="TextBox"><Setter Property="CornerRadius" Value="6"/><Setter Property="Padding" Value="10,7"/></Style>
+  <Style Selector="ListBox.bookCandidates ListBoxItem"><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,0,0,10"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/></Style>
+  <Style Selector="Border.bookCandidate"><Setter Property="Background" Value="White"/></Style>
+  <Style Selector="ListBoxItem:selected Border.bookCandidate"><Setter Property="Background" Value="{DynamicResource SoftBrush}"/></Style>
+  <Style Selector="ListBoxItem"><Setter Property="Padding" Value="10,7"/><Setter Property="CornerRadius" Value="6"/></Style>
+  <Style Selector="ListBoxItem:selected"><Setter Property="Background" Value="{DynamicResource SoftBrush}"/></Style>
+  <Style Selector="Slider.colorChannel:not(:pointerover) /template/ RepeatButton /template/ Border#TrackBackground, Slider.colorChannel:pointerover /template/ RepeatButton /template/ Border#TrackBackground"><Setter Property="Opacity" Value="0"/></Style>
+  <Style Selector="Slider.colorChannel /template/ Thumb:not(:pointerover) /template/ Border, Slider.colorChannel /template/ Thumb:pointerover /template/ Border"><Setter Property="Background" Value="White"/><Setter Property="BorderBrush" Value="#435D52"/><Setter Property="BorderThickness" Value="2"/><Setter Property="CornerRadius" Value="12"/><Setter Property="BoxShadow" Value="0 1 4 0 #33000000"/></Style>
+  <Style Selector="CheckBox"><Setter Property="Foreground" Value="{DynamicResource CanvasTextBrush}"/><Setter Property="BorderBrush" Value="{DynamicResource FieldHoverBorderBrush}"/></Style>
+  <Style Selector="Border.card CheckBox"><Setter Property="Foreground" Value="#203C36"/></Style>
+  <Style Selector="CheckBox /template/ Border"><Setter Property="BorderBrush" Value="{DynamicResource FieldHoverBorderBrush}"/><Setter Property="CornerRadius" Value="4"/></Style>
+  <Style Selector="TabControl.workspaceTabs /template/ ItemsPresenter#PART_ItemsPresenter"><Setter Property="IsVisible" Value="False"/></Style>
+  <Style Selector="TabItem"><Setter Property="Foreground" Value="{DynamicResource CanvasTextBrush}"/></Style>
+  <Style Selector="TextBox, ComboBox, NumericUpDown"><Setter Property="Foreground" Value="#203C36"/><Setter Property="BorderBrush" Value="{DynamicResource FieldBorderBrush}"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="8"/><Setter Property="Background" Value="{DynamicResource FieldFillBrush}"/></Style>
+  <Style Selector="Button"><Setter Property="VerticalContentAlignment" Value="Center"/></Style>
+  <Style Selector="ComboBox"><Setter Property="VerticalContentAlignment" Value="Center"/></Style>
+  <Style Selector="NumericUpDown"><Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="TextAlignment" Value="Center"/></Style>
+  <Style Selector="TextBox:not(.multiline)"><Setter Property="VerticalContentAlignment" Value="Center"/></Style>
+  <Style Selector="NumericUpDown /template/ TextBox#PART_TextBox"><Setter Property="TextAlignment" Value="Center"/><Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="Padding" Value="4,0"/></Style>
+  <Style Selector="TextBox:not(:pointerover):not(:focus-within) /template/ Border#PART_BorderElement, ComboBox:not(:pointerover):not(:focus-within) /template/ Border#Background"><Setter Property="BorderBrush" Value="{DynamicResource FieldBorderBrush}"/><Setter Property="CornerRadius" Value="8"/></Style>
+  <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement, ComboBox:pointerover /template/ Border#Background"><Setter Property="BorderBrush" Value="{DynamicResource FieldHoverBorderBrush}"/></Style>
+  <Style Selector="TextBox:focus-within /template/ Border#PART_BorderElement, ComboBox:focus-within /template/ Border#Background"><Setter Property="BorderBrush" Value="{DynamicResource FieldFocusBorderBrush}"/></Style>
+  <Style Selector="ComboBox /template/ Border#HighlightBackground"><Setter Property="BorderBrush" Value="Transparent"/></Style>
+  <Style Selector="NumericUpDown /template/ ButtonSpinner /template/ Border"><Setter Property="BorderBrush" Value="{DynamicResource FieldBorderBrush}"/><Setter Property="CornerRadius" Value="8"/></Style>
+  <Style Selector="NumericUpDown:pointerover /template/ ButtonSpinner /template/ Border"><Setter Property="BorderBrush" Value="{DynamicResource FieldHoverBorderBrush}"/></Style>
+  <Style Selector="NumericUpDown /template/ ButtonSpinner /template/ TextBox /template/ Border#PART_BorderElement"><Setter Property="BorderBrush" Value="Transparent"/><Setter Property="BorderThickness" Value="0"/></Style>
+  <Style Selector="ButtonSpinner /template/ RepeatButton /template/ ContentPresenter#PART_ContentPresenter"><Setter Property="BorderBrush" Value="{DynamicResource FieldBorderBrush}"/><Setter Property="Background" Value="{DynamicResource FieldFillBrush}"/></Style>
+  <Style Selector="ButtonSpinner /template/ RepeatButton:pointerover /template/ ContentPresenter#PART_ContentPresenter"><Setter Property="Background" Value="{DynamicResource FieldHoverFillBrush}"/></Style>
+  <Style Selector="Expander /template/ ToggleButton /template/ Border#ToggleButtonBackground, Expander /template/ Border#ExpanderContent"><Setter Property="BorderBrush" Value="{DynamicResource FieldBorderBrush}"/><Setter Property="CornerRadius" Value="8"/></Style>
+  <Style Selector="Expander:not(:pointerover) /template/ Border#ToggleButtonBackground, Expander:pointerover /template/ Border#ToggleButtonBackground, Expander /template/ ToggleButton:not(:pointerover) /template/ Border#ToggleButtonBackground, Expander /template/ ToggleButton:pointerover /template/ Border#ToggleButtonBackground"><Setter Property="BorderBrush" Value="{DynamicResource FieldBorderBrush}"/><Setter Property="CornerRadius" Value="8"/></Style>
+  <Style Selector="Button"><Setter Property="BorderBrush" Value="Transparent"/></Style>
+  <Style Selector="ScrollBar"><Setter Property="AllowAutoHide" Value="False"/></Style>
+  <Style Selector="ScrollBar:vertical"><Setter Property="Width" Value="24"/><Setter Property="MinWidth" Value="24"/></Style>
+  <Style Selector="ScrollBar:horizontal"><Setter Property="Height" Value="24"/><Setter Property="MinHeight" Value="24"/></Style>
+  <Style Selector="ScrollBar:vertical /template/ Border#VerticalRoot"><Setter Property="Width" Value="24"/><Setter Property="Background" Value="{DynamicResource ScrollTrackBrush}"/><Setter Property="CornerRadius" Value="12"/><Setter Property="ClipToBounds" Value="True"/></Style>
+  <Style Selector="ScrollBar:horizontal /template/ Border#HorizontalRoot"><Setter Property="Height" Value="24"/><Setter Property="Background" Value="{DynamicResource ScrollTrackBrush}"/><Setter Property="CornerRadius" Value="12"/><Setter Property="ClipToBounds" Value="True"/></Style>
+  <Style Selector="ScrollBar:vertical /template/ Thumb"><Setter Property="MinHeight" Value="44"/><Setter Property="MinWidth" Value="20"/></Style>
+  <Style Selector="ScrollBar:horizontal /template/ Thumb"><Setter Property="MinWidth" Value="44"/><Setter Property="MinHeight" Value="20"/></Style>
+  <Style Selector="ScrollBar /template/ RepeatButton#PART_LineUpButton, ScrollBar /template/ RepeatButton#PART_LineDownButton, ScrollBar /template/ RepeatButton#PART_LineLeftButton, ScrollBar /template/ RepeatButton#PART_LineRightButton"><Setter Property="IsVisible" Value="False"/></Style>
+  <Style Selector="ScrollBar /template/ Thumb /template/ Border"><Setter Property="Background" Value="{DynamicResource ScrollThumbBrush}"/><Setter Property="CornerRadius" Value="7"/><Setter Property="Margin" Value="2"/></Style>
+  <Style Selector="ScrollBar /template/ Thumb:not(:pointerover) /template/ Border, ScrollBar /template/ Thumb:pointerover /template/ Border"><Setter Property="CornerRadius" Value="10"/><Setter Property="ClipToBounds" Value="True"/></Style>
+  <Style Selector="ScrollBar /template/ Thumb:not(:pointerover) /template/ Border"><Setter Property="Background" Value="{DynamicResource ScrollThumbBrush}"/></Style>
+  <Style Selector="ScrollBar /template/ Thumb:pointerover /template/ Border"><Setter Property="Background" Value="{DynamicResource AccentBrush}"/></Style>
+ </Application.Styles>
+</Application>

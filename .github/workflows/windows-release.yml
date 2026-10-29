@@ -1,0 +1,37 @@
+name: Windows release
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'windows/**'
+      - '.github/workflows/windows-release.yml'
+permissions:
+  contents: write
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Test Windows source
+        run: dotnet run --project windows/tests/FontFilter.Tests -c Release
+      - name: Build Windows portable package
+        shell: pwsh
+        run: |
+          dotnet publish windows/src/FontFilter.Desktop -c Release -r win-x64 --self-contained true -o release/FontFilter
+          if ($LASTEXITCODE -ne 0) { throw 'Windows publish failed' }
+          Copy-Item windows/README.md release/FontFilter/README.md
+          Copy-Item windows/THIRD-PARTY-NOTICES.md release/FontFilter/
+          Copy-Item windows/packaging/licenses release/FontFilter/licenses -Recurse
+          Compress-Archive release/FontFilter release/FontFilter-Windows-x64.zip
+      - name: Publish separate Windows release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $tag = 'windows-' + (Get-Date -Format yyyy.MM.dd) + '.' + '${{ github.run_number }}'
+          gh release create $tag release/FontFilter-Windows-x64.zip --target '${{ github.sha }}' --title "Windows portable $tag" --notes 'Windows-only release. Existing macOS sources and release assets are unchanged. Extract the whole folder, then run FontFilter.exe.' --latest=false

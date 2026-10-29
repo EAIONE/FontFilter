@@ -1,5 +1,7 @@
 # 字里行间 · Windows / macOS 跨平台版
 
+Windows 更新（2026-10-29）：当前 Windows 源码、构建和验证说明见 [windows/README.md](windows/README.md)。Windows 下载包仍使用下表文件名；macOS 包与说明保持原样。
+
 ## 下载
 
 前往 [Releases 页面](https://github.com/EAIONE/FontFilter/releases) 下载对应平台的压缩包：
@@ -14,7 +16,7 @@
 
 - 本次 Mac 包适合 Intel iMac，macOS 12 或以上。打开“字里行间.app”，也可拖到“应用程序”。
 - Windows 包适合 Windows 10/11 x64。解压整个 FontFilter 文件夹后打开 FontFilter.exe，不要只复制 exe。
-- 两个平台均包含运行环境，无需另装 .NET。原 Windows 程序和原压缩包未修改。
+- 两个平台均包含运行环境，无需另装 .NET。Windows 更新说明见 windows/README.md。
 - Mac 使用本地临时签名，未做 Apple 公证；Windows 未做发布者签名。若 Mac 阻止首次打开，可在 Finder 中右键应用选择“打开”，或到“系统设置 → 隐私与安全性”允许打开。
 
 ## 本次界面更新（0.2.4）

@@ -5,3 +5,14 @@ release/
 .DS_Store
 
 backups/
+
+# Windows release artifacts and local user data
+*.zip
+*.bak
+*.db
+*.db-*
+*.log
+settings.json
+windows/**/bin/
+windows/**/obj/
+windows/release/
