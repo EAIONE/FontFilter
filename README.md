@@ -108,3 +108,13 @@ Windows 主机可运行 `scripts/publish-windows.ps1`。开发 SDK 和下载缓�
 ### 0.2.11 独立等大预览与间距
 点击书页或“独立预览”打开单独窗口，默认隐藏版心线，支持等大100%与适应窗口。根据当前显示器尺寸和系统缩放换算；实物尺寸需用100mm标尺校准，按显示器记住结果。窗口移动到其他显示器时重新读取对应换算。等大页面超出窗口时滚动查看，保持物理比例。
 工作台模式按钮、标题与卡片的间距统一加大；窄窗口将字体位置按钮换行，避免拥挤。页边、参数标签和各列间距一并整理。
+
+[下载最新 Windows 版](https://github.com/EAIONE/FontFilter/releases/download/windows-2026.10.29.1/FontFilter-Windows-x64.zip)
+
+## Windows 最新界面
+
+以下图片由当前 Windows 版本自身导出，使用隔离验证数据与默认样文，不包含桌面、密钥或个人设置。
+
+![字体工作台](windows/docs/screenshots/workspace.png)
+![字体对比](windows/docs/screenshots/comparison.png)
+![书页试排](windows/docs/screenshots/page-typesetting.png)

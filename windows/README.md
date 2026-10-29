@@ -26,3 +26,11 @@ powershell -ExecutionPolicy Bypass -File scripts/publish-windows.ps1
 2026-10-29：使用本机 NuGet 缓存离线还原后，核心测试 **61/61 通过**，Windows Desktop Release 构建成功（0 警告、0 错误）。发布 ZIP 取自当前已安装 Windows 应用（主程序修改时间 2026-10-28 19:54），并非本次重新编译。已安装的 `FontFilter.dll`、`FontFilter.Core.dll` 与本地对应 Release 构建产物 SHA-256 一致；源码最近修改早于主程序构建。尚未做可重现构建或完整二进制逐项源码溯源。
 
 第三方许可见 `THIRD-PARTY-NOTICES.md` 和 `packaging/licenses/`。
+
+## Windows 最新界面
+
+以下图片由当前 Windows 版本自身导出，使用隔离验证数据与默认样文，不包含桌面、密钥或个人设置。
+
+![字体工作台](docs/screenshots/workspace.png)
+![字体对比](docs/screenshots/comparison.png)
+![书页试排](docs/screenshots/page-typesetting.png)
