@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><AssemblyName>FontFilter.Updater</AssemblyName><PublishSingleFile>true</PublishSingleFile><IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract><EnableCompressionInSingleFile>true</EnableCompressionInSingleFile></PropertyGroup>
+ <ItemGroup><Compile Include="../FontFilter.Core/Updates/UpdateManifest.cs" Link="UpdateManifest.cs"/><Compile Include="../FontFilter.Core/Updates/UpdateTrust.cs" Link="UpdateTrust.cs"/><Compile Include="../FontFilter.Core/Updates/UpdatePackage.cs" Link="UpdatePackage.cs"/><Compile Include="../FontFilter.Core/Updates/UpdateTransaction.cs" Link="UpdateTransaction.cs"/><Compile Include="../FontFilter.Core/AppInstance.cs" Link="AppInstance.cs"/><EmbeddedResource Include="../FontFilter.Core/Updates/update-public-key.pem" LogicalName="FontFilter.UpdatePublicKey"/></ItemGroup>
+ <ItemGroup><Compile Include="../FontFilter.Core/Updates/UpdateHandoff.cs" Link="UpdateHandoff.cs"/></ItemGroup>
+</Project>

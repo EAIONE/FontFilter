@@ -1,0 +1,7 @@
+using System.Security.Cryptography;
+using System.Text.Json;
+if(args.Length!=4){Console.Error.WriteLine("Usage: release-directory signing-key public-key version");return 2;}
+var version=args[3];if(!System.Text.RegularExpressions.Regex.IsMatch(version,@"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$"))throw new ArgumentException("Stable three-part version required");
+using var key=ECDsa.Create();key.ImportFromPem(File.ReadAllText(args[1]));using var expected=ECDsa.Create();expected.ImportFromPem(File.ReadAllText(args[2]));if(!key.ExportSubjectPublicKeyInfo().SequenceEqual(expected.ExportSubjectPublicKeyInfo()))throw new CryptographicException("Release key does not match client key");
+var packages=new[]{("win-x64","FontFilter-Windows-x64.zip"),("osx-x64","FontFilter-macOS-Intel.zip")}.Select(pair=>{var path=Path.Combine(args[0],pair.Item2);using var file=File.OpenRead(path);return new{Platform=pair.Item1,FileName=pair.Item2,Url=$"https://github.com/EAIONE/FontFilter/releases/download/v{version}/{pair.Item2}",Sha256=Convert.ToHexString(SHA256.HashData(file)).ToLowerInvariant(),Size=file.Length};}).ToArray();
+var bytes=JsonSerializer.SerializeToUtf8Bytes(new{Version=version,Packages=packages},new JsonSerializerOptions{WriteIndented=true});File.WriteAllBytes(Path.Combine(args[0],"update.json"),bytes);File.WriteAllText(Path.Combine(args[0],"update.sig"),Convert.ToBase64String(key.SignData(bytes,HashAlgorithmName.SHA256)));Console.WriteLine("Authenticated update feed created");return 0;

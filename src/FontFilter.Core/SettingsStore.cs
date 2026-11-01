@@ -3,6 +3,8 @@ using System.Text.Json;
 namespace FontFilter;
 public sealed class UserSettings
 {
+ public bool AutomaticUpdates{get;set;}=true;
+ public string UpdateDownloadProxy{get;set;}=UpdatePolicy.DefaultProxy;
  public Dictionary<string,int> TagUsage{get;set;}=new();
  public void RecordTags(IEnumerable<string> tags){TagUsage??=new();foreach(var tag in tags.Where(t=>!string.IsNullOrWhiteSpace(t)).Distinct(StringComparer.OrdinalIgnoreCase))TagUsage[tag]=Math.Min(TagUsage.GetValueOrDefault(tag),int.MaxValue-1)+1;}
  public IEnumerable<string> FrequentTags()=>(TagUsage??new()).OrderByDescending(p=>p.Value).ThenBy(p=>p.Key,StringComparer.OrdinalIgnoreCase).Take(12).Select(p=>p.Key);

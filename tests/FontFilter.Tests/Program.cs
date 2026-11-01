@@ -48,5 +48,6 @@ BookLineBreakerTests.Run(Test,Check);
 ThemeTests.Run(Test,Check);
 ImportTests.Run(Test,Check,dir);
 WorkspaceTests.Run(Test,Check,dir);
+UpdateTests.Run(Test,Check,dir);
 Console.WriteLine($"RESULT {count-failures}/{count} passed");return failures==0?0:1;
 sealed class ApiTestHandler(Func<System.Net.Http.HttpRequestMessage,CancellationToken,Task<System.Net.Http.HttpResponseMessage>> send):System.Net.Http.HttpMessageHandler {protected override Task<System.Net.Http.HttpResponseMessage> SendAsync(System.Net.Http.HttpRequestMessage request,CancellationToken cancellationToken)=>send(request,cancellationToken);}

@@ -10,6 +10,8 @@ stage_dir="$(mktemp -d "${TMPDIR:-/tmp}/fontfilter-publish.XXXXXX")"
 mac_app="$stage_dir/mac/字里行间.app"
 mkdir -p "$mac_app/Contents/Resources/licenses" release
 "$dotnet_cmd" publish src/FontFilter.Desktop -c Release -r osx-x64 --self-contained true -o "$mac_app/Contents/MacOS"
+"$dotnet_cmd" publish src/FontFilter.Updater -c Release -r osx-x64 --self-contained true -o "$stage_dir/helper-mac"
+cp "$stage_dir/helper-mac/FontFilter.Updater" "$mac_app/Contents/MacOS/FontFilter.Updater"
 cp packaging/Info.plist "$mac_app/Contents/Info.plist"
 cp packaging/FontFilter.icns "$mac_app/Contents/Resources/FontFilter.icns"
 cp -R packaging/licenses/. "$mac_app/Contents/Resources/licenses/"
@@ -19,6 +21,8 @@ chmod +x "$mac_app/Contents/MacOS/FontFilter"
 codesign --force --deep --sign - "$mac_app"
 codesign --verify --deep --strict "$mac_app"
 "$dotnet_cmd" publish src/FontFilter.Desktop -c Release -r win-x64 --self-contained true -o release/windows/FontFilter
+"$dotnet_cmd" publish src/FontFilter.Updater -c Release -r win-x64 --self-contained true -o "$stage_dir/helper-windows"
+cp "$stage_dir/helper-windows/FontFilter.Updater.exe" release/windows/FontFilter/FontFilter.Updater.exe
 cp README.md "$stage_dir/mac/README.md"
 cp README.md release/windows/FontFilter/README.md
 mkdir -p release/windows/FontFilter/licenses
@@ -34,4 +38,6 @@ with zipfile.ZipFile(sys.argv[1],'w',zipfile.ZIP_DEFLATED) as archive:
 PYZIP
 cp "$stage_dir/FontFilter-macOS-Intel.zip" release/
 cp "$stage_dir/FontFilter-Windows-x64.zip" release/
+version="$(sed -n 's:.*<key>CFBundleShortVersionString</key><string>\([^<]*\)</string>.*:\1:p' packaging/Info.plist)"
+"$dotnet_cmd" run --project tools/FontFilter.Release -c Release -- release .tools/update-signing-key.pem src/FontFilter.Core/Updates/update-public-key.pem "$version"
 printf 'Packages saved to %s/release\nTemporary stage: %s\n' "$project_dir" "$stage_dir"

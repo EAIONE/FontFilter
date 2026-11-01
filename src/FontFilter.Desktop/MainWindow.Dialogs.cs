@@ -9,14 +9,40 @@ public sealed partial class MainWindow
 {
  async Task PickTags(bool search)
  {
-  var filter=Ui.Input("","搜索标签名称、维度或说明");filter.Name="TagSearch";filter.Margin=new Thickness(0,16,0,20);filter.MinHeight=40;var chosen=new HashSet<string>(search&&tagSearchMode?TagRules.Terms(tagQueryText??""):Array.Empty<string>());
-  var panel=new StackPanel{Spacing=12};var count=Ui.Text("未选择标签",12);var apply=new Button{Content=search?"用所选标签筛选":"添加到人工标签"};apply.Name="ApplyTags";apply.Classes.Add("primary");
+  var chosen=new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+  var selected=Ui.Input("","勾选下方标签后在这里显示");selected.Name="SelectedTags";selected.IsReadOnly=true;
+  var filter=Ui.Input("","搜索标签名称、维度或说明");filter.Name="TagSearch";filter.Margin=new Thickness(0,6,0,10);
+  var clear=new Button{Content="清空标签",Name="ClearTags",IsEnabled=false,Margin=new Thickness(8,0,0,0)};
+  var selectionRow=Ui.Grid("*,Auto");Ui.Put(selectionRow,selected);Ui.Put(selectionRow,clear,1);
+  var inputs=Ui.Stack(selectionRow,filter);inputs.Spacing=0;inputs.Margin=new Thickness(0,12,0,0);
+  var panel=new StackPanel{Spacing=6};var count=Ui.Text("未选择标签",12);var apply=new Button{Content=search?"用所选标签筛选":"添加到人工标签"};apply.Name="ApplyTags";apply.Classes.Add("primary");
   var footer=Ui.Grid("*,Auto");footer.Margin=new Thickness(0,18,0,0);count.VerticalAlignment=VerticalAlignment.Center;Ui.Put(footer,count);Ui.Put(footer,apply,1);
-  var grid=Ui.Grid("*","Auto,Auto,*,Auto");grid.Margin=new Thickness(24);Ui.Put(grid,Ui.Stack(Ui.Heading("按特征挑选字体"),Ui.Text("所选标签相加，匹配任一标签即显示；勾选后应用。",12)));Ui.Put(grid,filter,0,1);Ui.Put(grid,new ScrollViewer{Content=panel,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},0,2);Ui.Put(grid,footer,0,3);var w=Ui.Window("分类标签库",grid,850,720);
-  var definitions=TagCatalog.OrderForPicker(Store.AvailableTagDefinitions()).ToList();var tagCounts=Store.TagCounts(definitions.Select(t=>t.Name));
-  void Render(){panel.Children.Clear();foreach(var group in definitions.Where(t=>(t.Name+" "+t.Category+" "+t.Aliases).Contains(filter.Text??"",StringComparison.OrdinalIgnoreCase)).GroupBy(t=>t.Category)){
-   var wrap=new WrapPanel();foreach(var tag in group){var box=new CheckBox{Content=$"{tag.Name}  {tagCounts.GetValueOrDefault(tag.Name)}",IsChecked=chosen.Contains(tag.Name),Margin=new Thickness(0,0,15,8),MinWidth=125};box.IsCheckedChanged+=(_,_)=>{if(box.IsChecked==true)chosen.Add(tag.Name);else chosen.Remove(tag.Name);count.Text=$"已选 {chosen.Count} 项";};wrap.Children.Add(box);}panel.Children.Add(Ui.Stack(Ui.Heading(group.Key,15),wrap));}}
-  filter.TextChanged+=(_,_)=>Render();Render();apply.Click+=(_,_)=>{Settings.RecordTags(chosen);SaveSettings();if(search)ApplyTagSearch(chosen);else manual.Text=TagRules.SelectionText(manual.Text??"",chosen,false);w.Close();};await w.ShowDialog(this);
+  var grid=Ui.Grid("*","Auto,Auto,*,Auto");grid.Margin=new Thickness(24);Ui.Put(grid,Ui.Stack(Ui.Heading("按特征挑选字体"),Ui.Text("所选标签相加，匹配任一标签即显示；勾选后应用。",12)));Ui.Put(grid,inputs,0,1);Ui.Put(grid,new ScrollViewer{Content=panel,HorizontalScrollBarVisibility=Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled},0,2);Ui.Put(grid,footer,0,3);var w=Ui.Window("分类标签库",grid,850,720);
+  var boxes=new List<(TagDefinition Tag,CheckBox Box)>();var groups=new List<(StackPanel Group,List<CheckBox> Boxes)>();
+  var compactTemplate=new FuncControlTemplate<CheckBox>((control,scope)=>{
+   var row=Ui.Grid("18,*");row.VerticalAlignment=VerticalAlignment.Center;row.Background=Brushes.Transparent;
+   var tick=Ui.Text("✓",13);tick.HorizontalAlignment=HorizontalAlignment.Center;
+   tick.Bind(Control.IsVisibleProperty,new Avalonia.Data.Binding("IsChecked"){Source=control});
+   Ui.Put(row,new Border{Name="TagMark",Width=16,Height=16,BorderThickness=new Thickness(1),CornerRadius=new CornerRadius(3),Child=tick});
+   var label=new Avalonia.Controls.Presenters.ContentPresenter{Margin=new Thickness(8,0,0,0),VerticalAlignment=VerticalAlignment.Center};
+   label.Bind(Avalonia.Controls.Presenters.ContentPresenter.ContentProperty,new Avalonia.Data.Binding("Content"){Source=control});Ui.Put(row,label,1);return new Border{Name="TagHighlight",Margin=new Thickness(0,1,0,1),CornerRadius=new CornerRadius(4),Padding=new Thickness(2,0,4,0),Child=row};
+  });
+  void UpdateSelection(){selected.Text=string.Join("、",boxes.Where(b=>chosen.Contains(b.Tag.Name)).Select(b=>b.Tag.Name));count.Text=chosen.Count==0?"未选择标签":$"已选 {chosen.Count} 项";clear.IsEnabled=chosen.Count>0;}
+  void Filter(){var term=filter.Text??"";foreach(var item in boxes)item.Box.IsVisible=(item.Tag.Name+" "+item.Tag.Category+" "+item.Tag.Aliases).Contains(term,StringComparison.OrdinalIgnoreCase);foreach(var group in groups)group.Group.IsVisible=group.Boxes.Any(b=>b.IsVisible);}
+  void Render(IEnumerable<TagDefinition> definitions){foreach(var group in definitions.GroupBy(t=>t.Category)){
+   var wrap=new WrapPanel();var members=new List<CheckBox>();
+   foreach(var tag in group){var box=new CheckBox{Classes={"tagChoice"},Content=tag.Name,Template=compactTemplate,IsChecked=false,Margin=new Thickness(0,0,15,2),MinWidth=125,MinHeight=20,Height=20,Padding=new Thickness(0)};box.IsCheckedChanged+=(_,_)=>{if(box.IsChecked==true)chosen.Add(tag.Name);else chosen.Remove(tag.Name);UpdateSelection();};boxes.Add((tag,box));members.Add(box);wrap.Children.Add(box);}
+   var heading=Ui.Heading(group.Key,15);heading.Margin=new Thickness(0,4,0,4);var section=Ui.Stack(heading,wrap);section.Spacing=2;groups.Add((section,members));panel.Children.Add(section);
+  }Filter();}
+  clear.Click+=(_,_)=>{foreach(var item in boxes)item.Box.IsChecked=false;chosen.Clear();UpdateSelection();};filter.TextChanged+=(_,_)=>Filter();
+  // Paint the catalogue before reading/counting fonts; keep search from rebuilding controls.
+  Render(TagCatalog.OrderForPicker(TagCatalog.All));bool closed=false;w.Closed+=(_,_)=>closed=true;
+  w.Opened+=async(_,_)=>{try{
+   var data=await Task.Run(()=>{var fonts=Store.All();var definitions=TagCatalog.OrderForPicker(FontStore.AvailableTagDefinitions(fonts)).ToList();return (Definitions:definitions,Counts:FontStore.TagCounts(fonts,definitions.Select(t=>t.Name)));});
+   if(closed)return;var existing=boxes.Select(b=>b.Tag.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);Render(data.Definitions.Where(t=>!existing.Contains(t.Name)));
+   foreach(var item in boxes)item.Box.Content=$"{item.Tag.Name}  {data.Counts.GetValueOrDefault(item.Tag.Name)}";
+  }catch(Exception){if(!closed)count.Text="标签数量暂不可用，仍可勾选筛选";}};
+  apply.Click+=(_,_)=>{Settings.RecordTags(chosen);SaveSettings();if(search)ApplyTagSearch(chosen);else manual.Text=TagRules.SelectionText(manual.Text??"",chosen,false);w.Close();};await w.ShowDialog(this);
  }
  async Task EditMetadata()
  {
