@@ -114,7 +114,7 @@ Windows 主机可运行 `scripts/publish-windows.ps1`。开发 SDK 和下载缓�
 
 ### 1.1.0 无感更新 · 2026-11-01
 软件启动后在后台检查新版并自动下载；不弹确认，不要求手动下载或安装，也不强制关闭或重启。新版准备好后，等正常关闭软件再由独立助手完成安装，下次打开即为新版。如果恰好在安装过程中打开软件，会交接到新版后再打开。
-国内下载默认使用可切换的 HTTPS GitHub 加速入口，失败自动尝试 GitHub 原址。发布信息由项目密钥签名，下载包同时验证大小与 SHA-256；下载失败、签名错误、权限不足均保留当前版本。原程序备份留在安装目录旁，用户数据、标签、收藏与样文不参与程序替换。
+自动更新从 Gitee 的 orsone/FontFilter 私有发行版下载。启动前需在本机环境设置具有该仓库读取权限的 FONTFILTER_GITEE_TOKEN。令牌只随 Gitee API 请求发送，不写入安装包。发布信息由项目密钥签名，下载包同时验证大小与 SHA-256；下载失败、签名错误、权限不足均保留当前版本。原程序备份留在安装目录旁，用户数据、标签、收藏与样文不参与程序替换。
 旧版本没有更新模块，所以首次需换成此版本；以后发布带签名更新信息的新版本即可自动更新。Windows x64 与 Intel iMac macOS 12+ 使用各自对应的程序包。
-开发发布：统一修改 Directory.Build.props 与 packaging/Info.plist 的版本。scripts/publish.sh 在 Mac 上构建两平台程序、独立助手、签名 Mac 包并生成 update.json/update.sig；本机 .tools/update-signing-key.pem 不进入源码包，不可上传 GitHub。Windows 可单独运行 scripts/publish-windows.ps1，再在两平台压缩包准备齐全后运行 scripts/New-UpdateManifest.ps1。每次 GitHub Release 必须包含两个 ZIP 和 update.json、update.sig，建议同时附上 SHA256SUMS.txt。不要为每次发布重新生成密钥。
+开发发布：统一修改 Directory.Build.props 与 packaging/Info.plist 的版本。scripts/publish.sh 在 Mac 上构建两平台程序、独立助手、签名 Mac 包并生成 update.json/update.sig；本机 .tools/update-signing-key.pem 不进入源码包，不可上传 GitHub。Windows 可单独运行 scripts/publish-windows.ps1，再在两平台压缩包准备齐全后运行 scripts/New-UpdateManifest.ps1。每次 Gitee 发行版必须包含两个 ZIP 和 update.json、update.sig，建议同时附上 SHA256SUMS.txt。不要为每次发布重新生成密钥。
 设置文件中的 AutomaticUpdates 默认为 true，UpdateDownloadProxy 可设为其他 HTTPS 代理前缀，留空则仅使用 GitHub 原址。检查失败不会弹窗；诊断仅保存在本机数据目录 update-check.txt/update-error.txt。

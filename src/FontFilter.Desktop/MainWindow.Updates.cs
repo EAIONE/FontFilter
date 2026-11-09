@@ -15,7 +15,12 @@ public sealed partial class MainWindow
  {
   if(updateCheckRunning||UpdatePolicy.Platform=="unsupported"||RuntimeInformation.ProcessArchitecture!=Architecture.X64)return;updateCheckRunning=true;
   try{
-   using var http=new HttpClient{Timeout=Timeout.InfiniteTimeSpan};var pending=await new UpdateClient(http).PrepareAsync(Path.Combine(FontFilter.App.DataDirectory,"Updates"),Settings.UpdateDownloadProxy,UpdatePolicy.CurrentVersion,UpdatePolicy.Platform,updateCancellation.Token);
+   var token = Environment.GetEnvironmentVariable("FONTFILTER_GITEE_TOKEN")?.Trim();
+   if (string.IsNullOrEmpty(token))
+    throw new IOException("请设置具有 Gitee 私有仓库读取权限的 FONTFILTER_GITEE_TOKEN。");
+   using var http = new HttpClient(new GiteeUpdateTransport(token)) { Timeout = Timeout.InfiniteTimeSpan };
+   var pending = await new UpdateClient(http).PrepareAsync(Path.Combine(FontFilter.App.DataDirectory, "Updates"), null,
+       UpdatePolicy.CurrentVersion, UpdatePolicy.Platform, updateCancellation.Token);
    if(updateCancellation.IsCancellationRequested)return;pendingUpdate=pending;if(pending!=null)status.Text="新版已准备好，下次打开自动使用";
   }catch(OperationCanceledException){}catch(Exception ex){WriteUpdateError(ex);}finally{updateCheckRunning=false;}
  }
